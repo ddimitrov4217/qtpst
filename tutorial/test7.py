@@ -3,8 +3,7 @@
 
 import sys
 from PyQt5.QtWidgets import (
-    QApplication, QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget)
-# from PyQt5.QtGui import QIcon
+    QApplication, QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget, QStyle)
 from PyQt5.QtCore import Qt
 
 from mbox_helper import get_pst_folder_hierarchy
@@ -25,6 +24,8 @@ class MboxNavigator(QTreeWidget):
 
     def loadTreeNodes(self):
         items = []
+        # https://www.pythonguis.com/faq/built-in-qicons-pyqt/
+        icon = self.style().standardIcon(QStyle.SP_DirIcon)
 
         def get_total_messages(node):
             result = node.mcnt
@@ -43,8 +44,7 @@ class MboxNavigator(QTreeWidget):
             item.setText(2, '%d' % node.mcnt if node.mcnt > 0 else '')
             item.setTextAlignment(1, Qt.AlignRight)
             item.setTextAlignment(2, Qt.AlignRight)
-
-            # TODO item.setIcon(0, QIcon.fromTheme("edit-undo"))
+            item.setIcon(0, icon)
 
             if parent is not None:
                 parent.addChild(item)
@@ -67,6 +67,8 @@ class App(QWidget):
 
     def initUI(self):
         self.setWindowTitle('Тест за зареждане на имейл съобщения')
+        icon = self.style().standardIcon(QStyle.SP_TitleBarMenuButton)
+        self.setWindowIcon(icon)
         self.resize(400, 500)
         self.navigator = MboxNavigator(False)
 
