@@ -12,5 +12,8 @@ https://data-flair.training/blogs/python-pyqt5-tutorial/ - изпозлвано 
 не съм ги прегледал;
 
 https://www.tutorialspoint.com/pyqt5/index.htm
+https://zetcode.com/gui/pyqt5/layout/
+https://bg1lib.org/book/17045880/5f74ce - Create GUI Applications with Python & Qt6: The
+hands-on guide to making apps with Python Martin Fitzpatrick (свалена)
 
 vim:tw=92:et:ts=2:sw=2

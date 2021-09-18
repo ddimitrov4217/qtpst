@@ -24,6 +24,7 @@ class MboxNavigator(QTreeWidget):
 
     def loadTreeNodes(self):
         items = []
+        self.data = dict()
         # https://www.pythonguis.com/faq/built-in-qicons-pyqt/
         icon = self.style().standardIcon(QStyle.SP_DirIcon)
 
@@ -45,6 +46,7 @@ class MboxNavigator(QTreeWidget):
             item.setTextAlignment(1, Qt.AlignRight)
             item.setTextAlignment(2, Qt.AlignRight)
             item.setIcon(0, icon)
+            self.data[id(item)] = node
 
             if parent is not None:
                 parent.addChild(item)
@@ -58,6 +60,11 @@ class MboxNavigator(QTreeWidget):
 
         self.insertTopLevelItems(0, items)
         self.expandAll()
+        self.currentItemChanged.connect(self.handle_item_clicked)
+
+    def handle_item_clicked(self, current, _previous):
+        node = self.data[id(current)]
+        print('... select', node.name, node.nid['nid'])
 
 
 class App(QWidget):
