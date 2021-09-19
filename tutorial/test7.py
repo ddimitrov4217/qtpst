@@ -4,8 +4,8 @@
 import sys
 from PyQt5.QtWidgets import (
     QApplication, QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget, QStyle, QSplitter,
-    QListWidget, QListView, QTableView, QTreeView, QAbstractItemView)
-from PyQt5.QtCore import Qt, QAbstractItemModel, QModelIndex, QSize
+    QTreeView, QAbstractItemView)
+from PyQt5.QtCore import Qt, QAbstractItemModel, QModelIndex, QItemSelectionModel
 
 from mbox_helper import get_pst_folder_hierarchy
 
@@ -15,6 +15,7 @@ class MboxNavigator(QTreeWidget):
         super().__init__()
         self.with_empty = with_empty
         self.initUI()
+        self.propagateNid = None
 
     def initUI(self):
         self.setColumnCount(4)
@@ -63,14 +64,35 @@ class MboxNavigator(QTreeWidget):
         self.expandAll()
         self.currentItemChanged.connect(self.handle_item_clicked)
 
+    def setPropagateNid(self, func):
+        self.propagateNid = func
+
     def handle_item_clicked(self, current, _previous):
         node = self.data[id(current)]
         print('... select', node.name, node.nid['nid'])
+        if self.propagateNid is not None:
+            self.propagateNid(node.nid['nid'])
 
 
 class MessagesListModel(QAbstractItemModel):
-    def __init__(self):
+    def __init__(self, nid=None):
         super().__init__()
+        self.nid = nid
+        self.rows = 0
+        self.fetched_all = False
+        self.max_row_queried = set()  # XXX за проследяване
+
+    def setNid(self, nid):
+        # XXX забелязва се че вика първата и последната страница
+        zx = list(self.max_row_queried); zx.sort()
+        print('... self.max_row_queried: ', zx)
+        self.max_row_queried = set()
+        self.nid = nid
+        self.beginResetModel()
+        print('... MessagesListModel use nid:', self.nid)
+        # TODO извичане на съобщенията
+        self.rows = 1000
+        self.endResetModel()
 
     def columnCount(self, parent):
         return 3
@@ -78,7 +100,10 @@ class MessagesListModel(QAbstractItemModel):
     def rowCount(self, parent):
         if parent.isValid():
             return 0  # няма деца
-        return 30
+        if self.nid is None:
+            return 0
+        # TODO редовете до момента
+        return self.rows
 
     def parent(self, child):
         # представлява плосък списък
@@ -103,10 +128,11 @@ class MessagesListModel(QAbstractItemModel):
     def data(self, index, role):
         if not index.isValid():
             return None
+        self.max_row_queried.add(index.row())
         if role == Qt.DisplayRole:
             if index.column() == 0:
                 return '%d' % index.row()
-            return 'ред: %d; колонка: %d' % (index.row(), index.column())
+            return '%d: ред: %d; колонка: %d' % (self.nid, index.row(), index.column())
         # print('data:', role)
 
 
@@ -117,9 +143,15 @@ class MessagesList(QTreeView):
 
     def initUI(self):
         self.setModel(MessagesListModel())
-        # self.setColumnHidden(0, True)
+        self.setColumnHidden(0, True)
         for col, width in enumerate((50, 200, 45)):
             self.setColumnWidth(col, width)
+
+    def setNid(self, nid):
+        self.model().setNid(nid)
+        ix = self.model().createIndex(0, 0)
+        self.selectionModel().select(ix, QItemSelectionModel.Select | QItemSelectionModel.Rows)
+        self.scrollTo(ix, QAbstractItemView.EnsureVisible)
 
 
 class App(QWidget):
@@ -142,6 +174,8 @@ class App(QWidget):
         splitter.addWidget(self.messages)
         splitter.setStretchFactor(0, 2)
         splitter.setStretchFactor(1, 3)
+
+        self.navigator.setPropagateNid(self.messages.setNid)
 
         layout.addWidget(splitter)
         self.setLayout(layout)
