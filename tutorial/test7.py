@@ -5,9 +5,10 @@ import sys
 from PyQt5.QtWidgets import (
     QApplication, QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget, QStyle, QSplitter,
     QTreeView, QAbstractItemView)
-from PyQt5.QtCore import Qt, QAbstractItemModel, QModelIndex, QItemSelectionModel
+from PyQt5.QtCore import Qt, QAbstractItemModel, QModelIndex, QItemSelectionModel, QSize
 
 from mbox_helper import get_pst_folder_hierarchy
+from wxpst.model import mbox_wrapper
 
 
 class MboxNavigator(QTreeWidget):
@@ -80,29 +81,41 @@ class MessagesListModel(QAbstractItemModel):
         self.nid = nid
         self.rows = 0
         self.fetched_all = False
-        self.max_row_queried = set()  # XXX за проследяване
+        self.message_attr = (
+            'MessageSizeExtended', 'MessageDeliveryTime',
+            'SenderName', 'ConversationTopic')
+        self.message_attr_decor = (
+            ('{0:,d}', Qt.AlignRight),
+            ('{0:%d.%m.%Y %H:%M:%S}', Qt.AlignLeft),
+            ('{0:s}', Qt.AlignLeft),
+            ('{0:s}', Qt.AlignLeft))
+        self.data = {}
+        self.page_size = 20
 
     def setNid(self, nid):
-        # XXX забелязва се че вика първата и последната страница
-        zx = list(self.max_row_queried); zx.sort()
-        print('... self.max_row_queried: ', zx)
-        self.max_row_queried = set()
         self.nid = nid
         self.beginResetModel()
+        self.rows = mbox_wrapper.mbox.count_messages(self.nid)
         print('... MessagesListModel use nid:', self.nid)
-        # TODO извичане на съобщенията
-        self.rows = 1000
+        self.data = {}
         self.endResetModel()
 
+    def loadPage(self, page):
+        print('... load page:', page)
+        for entry, message in enumerate(mbox_wrapper.mbox.list_messages(
+                self.nid, self.message_attr,
+                skip=page*self.page_size,
+                page=self.page_size)):
+            self.data[page*self.page_size+entry] = message
+
     def columnCount(self, parent):
-        return 3
+        return len(self.message_attr) + 1
 
     def rowCount(self, parent):
         if parent.isValid():
             return 0  # няма деца
         if self.nid is None:
             return 0
-        # TODO редовете до момента
         return self.rows
 
     def parent(self, child):
@@ -112,7 +125,7 @@ class MessagesListModel(QAbstractItemModel):
     def hasChildren(self, parent):
         return not parent.isValid()
 
-    def index(self, row, col, parent):
+    def index(self, row, col, parent=None):
         idx = self.createIndex(row, col)
         return idx
 
@@ -120,19 +133,29 @@ class MessagesListModel(QAbstractItemModel):
         # https://doc.qt.io/qtforpython/PySide6/QtCore/Qt.html
         # PySide6.QtCore.Qt.ItemDataRole
         if role == Qt.DisplayRole:
-            return ('Първа колонка', 'Втора колонка', 'Трета колонка')[section]
-        # if role == Qt.SizeHintRole:
-        #    return QSize((1000, 20, 60)[section], 22)
-        # print('headerData:', role)
+            return list(self.message_attr)[section-1]
 
     def data(self, index, role):
         if not index.isValid():
             return None
-        self.max_row_queried.add(index.row())
+
         if role == Qt.DisplayRole:
-            if index.column() == 0:
-                return '%d' % index.row()
-            return '%d: ред: %d; колонка: %d' % (self.nid, index.row(), index.column())
+            entry = self.data.get(index.row(), None)
+            if entry is None:
+                page_fault = index.row()//self.page_size
+                self.loadPage(page_fault)
+                entry = self.data[index.row()]
+
+            value = entry[index.column()]
+            fmt = self.message_attr_decor[index.column()-1][0]
+            return fmt.format(value) if value is not None else None
+
+        if role == Qt.SizeHintRole:
+            return QSize(0, 16)
+
+        if role == Qt.TextAlignmentRole:
+            return self.message_attr_decor[index.column()-1][1]
+
         # print('data:', role)
 
 
@@ -144,7 +167,7 @@ class MessagesList(QTreeView):
     def initUI(self):
         self.setModel(MessagesListModel())
         self.setColumnHidden(0, True)
-        for col, width in enumerate((50, 200, 45)):
+        for col, width in enumerate((50, 70, 120, 100, 300)):
             self.setColumnWidth(col, width)
 
     def setNid(self, nid):
