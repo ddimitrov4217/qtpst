@@ -3,8 +3,9 @@
 
 import sys
 from PyQt5.QtWidgets import (
-    QApplication, QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget, QStyle)
-from PyQt5.QtCore import Qt
+    QApplication, QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget, QStyle, QSplitter,
+    QListWidget, QListView, QTableView, QTreeView, QAbstractItemView)
+from PyQt5.QtCore import Qt, QAbstractItemModel, QModelIndex, QSize
 
 from mbox_helper import get_pst_folder_hierarchy
 
@@ -17,7 +18,7 @@ class MboxNavigator(QTreeWidget):
 
     def initUI(self):
         self.setColumnCount(4)
-        for col, width in enumerate((250, 45, 45)):
+        for col, width in enumerate((220, 45, 45)):
             self.setColumnWidth(col, width)
         self.setHeaderLabels(['Папка', 'Съобщения', 'Директни', ''])
         self.loadTreeNodes()
@@ -67,6 +68,60 @@ class MboxNavigator(QTreeWidget):
         print('... select', node.name, node.nid['nid'])
 
 
+class MessagesListModel(QAbstractItemModel):
+    def __init__(self):
+        super().__init__()
+
+    def columnCount(self, parent):
+        return 3
+
+    def rowCount(self, parent):
+        if parent.isValid():
+            return 0  # няма деца
+        return 30
+
+    def parent(self, child):
+        # представлява плосък списък
+        return QModelIndex()
+
+    def hasChildren(self, parent):
+        return not parent.isValid()
+
+    def index(self, row, col, parent):
+        idx = self.createIndex(row, col)
+        return idx
+
+    def headerData(self, section, orientation, role):
+        # https://doc.qt.io/qtforpython/PySide6/QtCore/Qt.html
+        # PySide6.QtCore.Qt.ItemDataRole
+        if role == Qt.DisplayRole:
+            return ('Първа колонка', 'Втора колонка', 'Трета колонка')[section]
+        # if role == Qt.SizeHintRole:
+        #    return QSize((1000, 20, 60)[section], 22)
+        # print('headerData:', role)
+
+    def data(self, index, role):
+        if not index.isValid():
+            return None
+        if role == Qt.DisplayRole:
+            if index.column() == 0:
+                return '%d' % index.row()
+            return 'ред: %d; колонка: %d' % (index.row(), index.column())
+        # print('data:', role)
+
+
+class MessagesList(QTreeView):
+    def __init__(self):
+        super().__init__()
+        self.initUI()
+
+    def initUI(self):
+        self.setModel(MessagesListModel())
+        # self.setColumnHidden(0, True)
+        for col, width in enumerate((50, 200, 45)):
+            self.setColumnWidth(col, width)
+
+
 class App(QWidget):
     def __init__(self):
         super().__init__()
@@ -76,12 +131,19 @@ class App(QWidget):
         self.setWindowTitle('Тест за зареждане на имейл съобщения')
         icon = self.style().standardIcon(QStyle.SP_TitleBarMenuButton)
         self.setWindowIcon(icon)
-        self.resize(400, 500)
+        self.resize(900, 500)
         self.navigator = MboxNavigator(False)
+        self.messages = MessagesList()
 
         # https://zetcode.com/gui/pyqt5/layout/
         layout = QVBoxLayout()
-        layout.addWidget(self.navigator)
+        splitter = QSplitter(self)
+        splitter.addWidget(self.navigator)
+        splitter.addWidget(self.messages)
+        splitter.setStretchFactor(0, 2)
+        splitter.setStretchFactor(1, 3)
+
+        layout.addWidget(splitter)
         self.setLayout(layout)
 
 
