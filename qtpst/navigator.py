@@ -4,8 +4,8 @@
 import logging
 from collections import namedtuple
 
-from PyQt5.QtWidgets import QTreeWidget, QTreeWidgetItem, QStyle
-from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QTreeWidget, QTreeWidgetItem, QStyle, QAbstractItemView
+from PyQt5.QtCore import Qt, QItemSelectionModel
 
 from wxpst.model import mbox_wrapper
 from readms.readpst import PropertyContext
@@ -26,6 +26,7 @@ class MboxNavigator(QTreeWidget):
         for col, width in enumerate((220, 45, 45)):
             self.setColumnWidth(col, width)
         self.setHeaderLabels(['Папка', 'Съобщения', 'Директни', ''])
+        self.currentItemChanged.connect(self.handle_item_clicked)
 
     def load_tree_nodes(self):
         items = []
@@ -60,21 +61,35 @@ class MboxNavigator(QTreeWidget):
             for node in node.children:
                 add_node(node, item)
 
+        top_node = None
         for node in get_pst_folder_hierarchy():
             add_node(node)
+            if top_node is None:
+                top_node = node
 
+        self.clear()
         self.insertTopLevelItems(0, items)
         self.expandAll()
-        self.currentItemChanged.connect(self.handle_item_clicked)
+
+        ix = self.model().createIndex(0, 0)
+        self.selectionModel().select(ix, QItemSelectionModel.Select | QItemSelectionModel.Rows)
+        self.scrollTo(ix, QAbstractItemView.EnsureVisible)
+
+        if top_node is not None:
+            self.refresh_messages(top_node.nid['nid'])
 
     def set_propagation_nid(self, func):
         self.propagate_nid = func
 
     def handle_item_clicked(self, current, _previous):
-        node = self.data[id(current)]
-        log.debug('%d: %s', node.nid['nid'], node.name)
+        node = self.data.get(id(current), None)
+        if node is not None:
+            log.debug('%d: %s', node.nid['nid'], node.name)
+            self.refresh_messages(node.nid['nid'])
+
+    def refresh_messages(self, nid):
         if self.propagate_nid is not None:
-            self.propagate_nid(node.nid['nid'])
+            self.propagate_nid(nid)
 
 
 def get_pst_folder_hierarchy():
