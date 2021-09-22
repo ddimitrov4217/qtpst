@@ -6,7 +6,7 @@ from datetime import datetime
 
 import logging
 
-from PyQt5.QtWidgets import QDialog, QDialogButtonBox, QVBoxLayout, QTreeView
+from PyQt5.QtWidgets import QDialog, QDialogButtonBox, QVBoxLayout, QTreeView, QAbstractItemView
 from PyQt5.QtCore import Qt, QAbstractItemModel, QModelIndex
 
 from . import mbox_wrapper, global_env
@@ -58,15 +58,21 @@ class PstFilesDialog(QDialog):
             self.hide()
 
     def choose_file(self):
-        self.body.model().load_model_data()
-        # TODO Избор на текущия pst файл
-        # TODO Фукусиране на списъка с файловете
+        self.refresh_list()
         self.exec()
         return self.changed
 
     def no_choise(self):
         self.changed = False
         self.hide()
+
+    def refresh_list(self):
+        self.body.model().load_model_data()
+        found = self.body.model().find_mbox_pst_index()
+        self.body.clearSelection()
+        self.body.setCurrentIndex(found)
+        self.body.scrollTo(found, QAbstractItemView.EnsureVisible)
+        self.body.setFocus()
 
 
 class PstFilesListModel(QAbstractItemModel):
@@ -90,6 +96,15 @@ class PstFilesListModel(QAbstractItemModel):
             entry = (0, pst_file, statx.st_size/(1024.0*1024.0),
                      datetime.fromtimestamp(statx.st_mtime))
             self.model_data.append(entry)
+
+    def find_mbox_pst_index(self):
+        found = 0
+        if mbox_wrapper.pst_file is not None:
+            for ix_, entry in enumerate(self.model_data):
+                if entry[1] == mbox_wrapper.pst_file:
+                    found = ix_
+                    break
+        return self.createIndex(found, 0)
 
     def columnCount(self, _parent):
         return len(self.message_attr) + 1
