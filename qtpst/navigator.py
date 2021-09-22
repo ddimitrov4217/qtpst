@@ -75,6 +75,7 @@ class MboxNavigator(QTreeWidget):
         ix = self.model().createIndex(0, 0)
         self.selectionModel().select(ix, QItemSelectionModel.Select | QItemSelectionModel.Rows)
         self.scrollTo(ix, QAbstractItemView.EnsureVisible)
+        self.setFocus()
 
         if top_node is not None:
             self.refresh_messages(top_node.nid['nid'])

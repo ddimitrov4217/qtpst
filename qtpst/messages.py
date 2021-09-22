@@ -1,9 +1,11 @@
 # -*- coding: UTF-8 -*-
 # vim:ft=python:et:ts=4:sw=4:ai
 
+import re
 import logging
+
 from PyQt5.QtWidgets import QTreeView, QAbstractItemView
-from PyQt5.QtCore import Qt, QItemSelectionModel, QSize
+from PyQt5.QtCore import Qt, QItemSelectionModel
 
 from . import mbox_wrapper, AbstractFlatItemModel
 
@@ -76,7 +78,7 @@ class MessagesListModel(AbstractFlatItemModel):
         return None
 
     def data(self, index, role):
-        if not index.isValid():
+        if not index.isValid() or index.column() == 0:
             return None
 
         if role == Qt.DisplayRole:
@@ -88,10 +90,11 @@ class MessagesListModel(AbstractFlatItemModel):
 
             value = entry[index.column()]
             fmt = self.message_attr_decor[index.column()-1][0]
-            return fmt.format(value) if value is not None else None
-
-        if role == Qt.SizeHintRole:
-            return QSize(0, 16)
+            if value is not None:
+                value = fmt.format(value)
+                return re.sub("[\r\n]", " ", value)
+            else:
+                return None
 
         if role == Qt.TextAlignmentRole:
             return self.message_attr_decor[index.column()-1][1]
