@@ -41,6 +41,7 @@ class App(QMainWindow):
 
         self.navigator = MboxNavigator()
         self.messages = MessagesList()
+        self.navigator.set_propagation_nid(self.messages.set_nid)
 
         splitter = QSplitter(self)
         splitter.addWidget(self.navigator)

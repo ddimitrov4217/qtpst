@@ -15,7 +15,7 @@ log = logging.getLogger(__name__)
 
 
 class MboxNavigator(QTreeWidget):
-    def __init__(self, with_empty=True):
+    def __init__(self, with_empty=False):
         super().__init__()
         self.with_empty = with_empty
         self.initUI()
@@ -26,7 +26,6 @@ class MboxNavigator(QTreeWidget):
         for col, width in enumerate((220, 45, 45)):
             self.setColumnWidth(col, width)
         self.setHeaderLabels(['Папка', 'Съобщения', 'Директни', ''])
-        self.loadTreeNodes()
 
     def load_tree_nodes(self):
         items = []
@@ -61,9 +60,8 @@ class MboxNavigator(QTreeWidget):
             for node in node.children:
                 add_node(node, item)
 
-        # XXX Да се зарежда в подходящото време
-        # for node in get_pst_folder_hierarchy():
-        #     add_node(node)
+        for node in get_pst_folder_hierarchy():
+            add_node(node)
 
         self.insertTopLevelItems(0, items)
         self.expandAll()
