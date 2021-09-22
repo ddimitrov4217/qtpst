@@ -17,7 +17,7 @@ class MboxNavigator(QTreeWidget):
         super().__init__()
         self.with_empty = with_empty
         self.initUI()
-        self.propagateNid = None
+        self.propagate_nid = None
 
     def initUI(self):
         self.setColumnCount(4)
@@ -26,7 +26,7 @@ class MboxNavigator(QTreeWidget):
         self.setHeaderLabels(['Папка', 'Съобщения', 'Директни', ''])
         self.loadTreeNodes()
 
-    def loadTreeNodes(self):
+    def load_tree_nodes(self):
         items = []
         self.data = dict()
         # https://www.pythonguis.com/faq/built-in-qicons-pyqt/
@@ -67,8 +67,8 @@ class MboxNavigator(QTreeWidget):
         self.expandAll()
         self.currentItemChanged.connect(self.handle_item_clicked)
 
-    def setPropagateNid(self, func):
-        self.propagateNid = func
+    def set_propagation_nid(self, func):
+        self.propagate_nid = func
 
     def handle_item_clicked(self, current, _previous):
         node = self.data[id(current)]

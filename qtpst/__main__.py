@@ -21,7 +21,7 @@ class App(QMainWindow):
         self.initUI()
 
     def initUI(self):
-        self.setWindowTitle('Архиви на имейл кутия')
+        self.set_title()
         icon = self.style().standardIcon(QStyle.SP_TitleBarMenuButton)
         self.setWindowIcon(icon)
         self.resize(900, 500)
@@ -46,6 +46,13 @@ class App(QMainWindow):
         splitter.setStretchFactor(0, 2)
         splitter.setStretchFactor(1, 3)
         self.setCentralWidget(splitter)
+
+    def set_title(self):
+        name = 'Архиви на имейл кутия'
+        if mbox_wrapper.pst_file is not None:
+            self.setWindowTitle('%s: %s' % (name, mbox_wrapper.pst_file))
+        else:
+            self.setWindowTitle(name)
 
     def openPstFile(self):
         self.pstDialog.chooseFile()

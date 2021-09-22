@@ -18,8 +18,8 @@ class MessagesList(QTreeView):
         for col, width in enumerate((50, 70, 120, 100, 300)):
             self.setColumnWidth(col, width)
 
-    def setNid(self, nid):
-        self.model().setNid(nid)
+    def set_nid(self, nid):
+        self.model().set_nid(nid)
         ix = self.model().createIndex(0, 0)
         self.selectionModel().select(ix, QItemSelectionModel.Select | QItemSelectionModel.Rows)
         self.scrollTo(ix, QAbstractItemView.EnsureVisible)
@@ -42,7 +42,7 @@ class MessagesListModel(QAbstractItemModel):
         self.data = {}
         self.page_size = 20
 
-    def setNid(self, nid):
+    def set_nid(self, nid):
         self.nid = nid
         self.beginResetModel()
         self.rows = mbox_wrapper.mbox.count_messages(self.nid)
@@ -50,8 +50,8 @@ class MessagesListModel(QAbstractItemModel):
         self.data = {}
         self.endResetModel()
 
-    def loadPage(self, page):
-        print('... load page:', page)
+    def load_page(self, page):
+        log.debug(page)
         for entry, message in enumerate(mbox_wrapper.mbox.list_messages(
                 self.nid, self.message_attr,
                 skip=page*self.page_size,
@@ -93,7 +93,7 @@ class MessagesListModel(QAbstractItemModel):
             entry = self.data.get(index.row(), None)
             if entry is None:
                 page_fault = index.row()//self.page_size
-                self.loadPage(page_fault)
+                self.load_page(page_fault)
                 entry = self.data[index.row()]
 
             value = entry[index.column()]
