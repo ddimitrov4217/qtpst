@@ -1,17 +1,8 @@
 # -*- coding: UTF-8 -*-
 # vim:ft=python:et:ts=4:sw=4:ai
 
-from os import path
-
 from PyQt5.QtWidgets import QDialog, QDialogButtonBox, QVBoxLayout, QLabel
-from wxpst.model import mbox_wrapper, global_env
-
-
-def init_mbox():
-    config_file = path.join(path.dirname(__file__), '..', '..', 'wxpst')
-    config_file = path.abspath(path.join(config_file, "appconfig.ini"))
-    global_env.setup_env(config_file)
-    mbox_wrapper.init_mbox_wrapper(global_env.config)
+from wxpst.model import mbox_wrapper
 
 
 def read_pst(pst_file):
@@ -57,6 +48,3 @@ class PstFilesDialog(QDialog):
     def no_choise(self):
         self.changed = False
         self.hide()
-
-
-init_mbox()

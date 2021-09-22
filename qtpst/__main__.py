@@ -2,15 +2,17 @@
 # vim:ft=python:et:ts=4:sw=4:ai
 
 import sys
+from os import path
 import traceback
 import logging
+import click
 
 from PyQt5.QtWidgets import QApplication, QMainWindow, QToolBar, QMessageBox
 from PyQt5.QtWidgets import QStyle, QAction, QSplitter
 
-from wxpst.model import mbox_wrapper
+from wxpst.model import mbox_wrapper, global_env
 
-from . pstfiles import PstFilesDialog
+from . pstfiles import PstFilesDialog, read_pst
 from . navigator import MboxNavigator
 from . messages import MessagesList
 
@@ -36,7 +38,7 @@ class App(QMainWindow):
         self.pstDialog = PstFilesDialog(self)
         btnOpen = QAction('Open', self)
         btnOpen.setStatusTip('Избор и отваряне на pst файл')
-        btnOpen.triggered.connect(self.openPstFile)
+        btnOpen.triggered.connect(self.open_pst_file)
         toolbar.addAction(btnOpen)
 
         self.navigator = MboxNavigator()
@@ -57,7 +59,7 @@ class App(QMainWindow):
         else:
             self.setWindowTitle(name)
 
-    def openPstFile(self):
+    def open_pst_file(self):
         changed = self.pstDialog.choose_file()
         if changed:
             self.set_title()
@@ -80,13 +82,35 @@ def exception_hook(_etype, value, trace):
             sys.exit(127)
 
 
-def main():
+def run_navigator_app(pstfile):
     sys.excepthook = exception_hook
     app = QApplication([])
     ex = App()
+    if pstfile is not None:
+        read_pst(pstfile)
+        ex.set_title()
+        ex.navigator.load_tree_nodes()
     ex.show()
     sys.exit(app.exec_())
 
 
+@click.group(name='qtpst', help='Четене на изпозлваните от MS Outlook файлове')
+@click.option('--config', type=click.Path(exists=True), help='конфигурационен файл')
+def cli(config=None):
+    if config is None:
+        config_file = path.join(path.dirname(__file__), '..', '..', 'wxpst')
+        config_file = path.abspath(path.join(config_file, 'appconfig.ini'))
+    else:
+        config_file = config
+    global_env.setup_env(config_file)
+
+
+@cli.command(name='navigator', help='Избор и разглеждане на pst файлове')
+@click.option('--file', type=click.Path(exists=True), help='pst файл за разглеждане')
+def navigator(file):
+    mbox_wrapper.init_mbox_wrapper(global_env.config)
+    run_navigator_app(file)
+
+
 if __name__ == '__main__':
-    main()
+    cli()
