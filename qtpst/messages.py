@@ -42,7 +42,7 @@ class MessagesListModel(QAbstractItemModel):
             ('{0:%d.%m.%Y %H:%M:%S}', Qt.AlignLeft),
             ('{0:s}', Qt.AlignLeft),
             ('{0:s}', Qt.AlignLeft))
-        self.data = {}
+        self.model_data = {}
         self.page_size = 20
 
     def set_nid(self, nid):
@@ -50,7 +50,7 @@ class MessagesListModel(QAbstractItemModel):
         self.beginResetModel()
         self.rows = mbox_wrapper.mbox.count_messages(self.nid)
         log.debug(self.nid)
-        self.data = {}
+        self.model_data = {}
         self.endResetModel()
 
     def load_page(self, page):
@@ -59,9 +59,9 @@ class MessagesListModel(QAbstractItemModel):
                 self.nid, self.message_attr,
                 skip=page*self.page_size,
                 page=self.page_size)):
-            self.data[page*self.page_size+entry] = message
+            self.model_data[page*self.page_size+entry] = message
 
-    def columnCount(self, parent):
+    def columnCount(self, _parent):
         return len(self.message_attr) + 1
 
     def rowCount(self, parent):
@@ -71,33 +71,36 @@ class MessagesListModel(QAbstractItemModel):
             return 0
         return self.rows
 
-    def parent(self, child):
+    @staticmethod
+    def parent(_child):
         # представлява плосък списък
         return QModelIndex()
 
-    def hasChildren(self, parent):
+    @staticmethod
+    def hasChildren(parent):
         return not parent.isValid()
 
-    def index(self, row, col, parent=None):
+    def index(self, row, col, _parent=None):
         idx = self.createIndex(row, col)
         return idx
 
-    def headerData(self, section, orientation, role):
+    def headerData(self, section, _orientation, role):
         # https://doc.qt.io/qtforpython/PySide6/QtCore/Qt.html
         # PySide6.QtCore.Qt.ItemDataRole
         if role == Qt.DisplayRole:
             return list(self.message_attr)[section-1]
+        return None
 
     def data(self, index, role):
         if not index.isValid():
             return None
 
         if role == Qt.DisplayRole:
-            entry = self.data.get(index.row(), None)
+            entry = self.model_data.get(index.row(), None)
             if entry is None:
                 page_fault = index.row()//self.page_size
                 self.load_page(page_fault)
-                entry = self.data[index.row()]
+                entry = self.model_data[index.row()]
 
             value = entry[index.column()]
             fmt = self.message_attr_decor[index.column()-1][0]
@@ -108,3 +111,5 @@ class MessagesListModel(QAbstractItemModel):
 
         if role == Qt.TextAlignmentRole:
             return self.message_attr_decor[index.column()-1][1]
+
+        return None

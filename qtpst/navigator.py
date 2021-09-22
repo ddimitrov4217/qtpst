@@ -20,6 +20,7 @@ class MboxNavigator(QTreeWidget):
         self.with_empty = with_empty
         self.initUI()
         self.propagate_nid = None
+        self.data = None
 
     def initUI(self):
         self.setColumnCount(4)
@@ -58,14 +59,14 @@ class MboxNavigator(QTreeWidget):
                 parent.addChild(item)
             else:
                 items.append(item)
-            for node in node.children:
-                add_node(node, item)
+            for node_ in node.children:
+                add_node(node_, item)
 
         top_node = None
-        for node in get_pst_folder_hierarchy():
-            add_node(node)
+        for node_ in get_pst_folder_hierarchy():
+            add_node(node_)
             if top_node is None:
-                top_node = node
+                top_node = node_
 
         self.clear()
         self.insertTopLevelItems(0, items)
