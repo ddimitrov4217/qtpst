@@ -8,6 +8,8 @@ import logging
 from PyQt5.QtWidgets import QApplication, QMainWindow, QToolBar, QMessageBox
 from PyQt5.QtWidgets import QStyle, QAction, QSplitter
 
+from wxpst.model import mbox_wrapper
+
 from . pstfiles import PstFilesDialog
 from . navigator import MboxNavigator
 from . messages import MessagesList
@@ -55,7 +57,10 @@ class App(QMainWindow):
             self.setWindowTitle(name)
 
     def openPstFile(self):
-        self.pstDialog.chooseFile()
+        changed = self.pstDialog.choose_file()
+        if changed:
+            self.set_title()
+            self.navigator.load_tree_nodes()
 
 
 def exception_hook(_etype, value, trace):

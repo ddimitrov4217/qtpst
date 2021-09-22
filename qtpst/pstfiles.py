@@ -15,21 +15,27 @@ def init_mbox():
 
 
 def read_pst(pst_file):
-    mbox_wrapper.close_mbox()
-    mbox_wrapper.open_mbox(pst_file)
+    if pst_file is not None and (
+            mbox_wrapper.pst_file is None or
+            mbox_wrapper.pst_file != pst_file):
+        mbox_wrapper.close_mbox()
+        mbox_wrapper.open_mbox(pst_file)
+        return True
+    return False
 
 
 class PstFilesDialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setupUI()
+        self.changed = False
 
     def setupUI(self):
         self.setWindowTitle('Изберете pst файл')
         buttons = QDialogButtonBox.Open | QDialogButtonBox.Cancel
         self.buttonBox = QDialogButtonBox(buttons)
-        self.buttonBox.accepted.connect(self.openFile)
-        self.buttonBox.rejected.connect(self.reject)
+        self.buttonBox.accepted.connect(self.open_file)
+        self.buttonBox.rejected.connect(self.no_choise)
         self.layout = QVBoxLayout()
         # TODO Извеждане на списъка с pst файлове за избор
         body = QLabel('TODO: Списък с pst файлове за избор')
@@ -37,16 +43,20 @@ class PstFilesDialog(QDialog):
         self.layout.addWidget(self.buttonBox)
         self.setLayout(self.layout)
 
-    def openFile(self):
+    def open_file(self):
+        self.changed = False
         # TODO Намиране на избрания файл
-        # TODO Прихващане на грешките за PyQt
         pstfile = '2020.pst'
-        read_pst(pstfile)
+        self.changed = read_pst(pstfile)
         self.hide()
 
-    def chooseFile(self):
-        # TODO Обновяване на списъка с pst файловете
-        self.open()
+    def choose_file(self):
+        self.exec()
+        return self.changed
+
+    def no_choise(self):
+        self.changed = False
+        self.hide()
 
 
 init_mbox()
