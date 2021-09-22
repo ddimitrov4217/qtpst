@@ -18,7 +18,7 @@ class MessagesList(QTreeView):
     def initUI(self):
         self.setModel(MessagesListModel())
         self.setColumnHidden(0, True)
-        for col, width in enumerate((50, 70, 120, 100, 300)):
+        for col, width in enumerate((50, 120, 70, 100, 300)):
             self.setColumnWidth(col, width)
 
     def set_nid(self, nid):
@@ -33,13 +33,12 @@ class MessagesListModel(QAbstractItemModel):
         super().__init__()
         self.nid = nid
         self.rows = 0
-        self.fetched_all = False
         self.message_attr = (
-            'MessageSizeExtended', 'MessageDeliveryTime',
+            'MessageDeliveryTime', 'MessageSizeExtended',
             'SenderName', 'ConversationTopic')
         self.message_attr_decor = (
-            ('{0:,d}', Qt.AlignRight),
             ('{0:%d.%m.%Y %H:%M:%S}', Qt.AlignLeft),
+            ('{0:,d}', Qt.AlignRight),
             ('{0:s}', Qt.AlignLeft),
             ('{0:s}', Qt.AlignLeft))
         self.model_data = {}

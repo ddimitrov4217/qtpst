@@ -24,7 +24,7 @@ class MboxNavigator(QTreeWidget):
 
     def initUI(self):
         self.setColumnCount(4)
-        for col, width in enumerate((220, 45, 45)):
+        for col, width in enumerate((220, 40, 40, 5)):
             self.setColumnWidth(col, width)
         self.setHeaderLabels(['Папка', 'Съобщения', 'Директни', ''])
         self.currentItemChanged.connect(self.handle_item_clicked)

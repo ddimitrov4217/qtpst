@@ -47,8 +47,8 @@ class App(QMainWindow):
         splitter = QSplitter(self)
         splitter.addWidget(self.navigator)
         splitter.addWidget(self.messages)
-        splitter.setStretchFactor(0, 2)
-        splitter.setStretchFactor(1, 3)
+        splitter.setStretchFactor(0, 5)
+        splitter.setStretchFactor(1, 9)
         self.setCentralWidget(splitter)
 
     def set_title(self):

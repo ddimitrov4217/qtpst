@@ -47,7 +47,7 @@ class PstFilesDialog(QDialog):
         self.layout.addWidget(self.body)
         self.layout.addWidget(self.buttonBox)
         self.setLayout(self.layout)
-        self.resize(400, 300)
+        self.resize(350, 300)
 
     def open_file(self):
         self.changed = False
