@@ -1,10 +1,13 @@
 # -*- coding: UTF-8 -*-
 # vim:ft=python:et:ts=4:sw=4:ai
 
+import logging
 from PyQt5.QtWidgets import QTreeView, QAbstractItemView
 from PyQt5.QtCore import Qt, QAbstractItemModel, QModelIndex, QItemSelectionModel, QSize
 
 from wxpst.model import mbox_wrapper
+
+log = logging.getLogger(__name__)
 
 
 class MessagesList(QTreeView):
@@ -46,7 +49,7 @@ class MessagesListModel(QAbstractItemModel):
         self.nid = nid
         self.beginResetModel()
         self.rows = mbox_wrapper.mbox.count_messages(self.nid)
-        print('... MessagesListModel use nid:', self.nid)
+        log.debug(self.nid)
         self.data = {}
         self.endResetModel()
 

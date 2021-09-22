@@ -1,6 +1,7 @@
 # -*- coding: UTF-8 -*-
 # vim:ft=python:et:ts=4:sw=4:ai
 
+import logging
 from collections import namedtuple
 
 from PyQt5.QtWidgets import QTreeWidget, QTreeWidgetItem, QStyle
@@ -10,6 +11,7 @@ from wxpst.model import mbox_wrapper
 from readms.readpst import PropertyContext
 
 MboxNode = namedtuple('MboxNode', ['name', 'mcnt', 'tcnt', 'nid', 'children'])
+log = logging.getLogger(__name__)
 
 
 class MboxNavigator(QTreeWidget):
@@ -72,9 +74,9 @@ class MboxNavigator(QTreeWidget):
 
     def handle_item_clicked(self, current, _previous):
         node = self.data[id(current)]
-        print('... select', node.name, node.nid['nid'])
-        if self.propagateNid is not None:
-            self.propagateNid(node.nid['nid'])
+        log.debug('%d: %s', node.nid['nid'], node.name)
+        if self.propagate_nid is not None:
+            self.propagate_nid(node.nid['nid'])
 
 
 def get_pst_folder_hierarchy():
