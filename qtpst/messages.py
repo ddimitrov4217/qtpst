@@ -3,9 +3,9 @@
 
 import logging
 from PyQt5.QtWidgets import QTreeView, QAbstractItemView
-from PyQt5.QtCore import Qt, QAbstractItemModel, QModelIndex, QItemSelectionModel, QSize
+from PyQt5.QtCore import Qt, QItemSelectionModel, QSize
 
-from . import mbox_wrapper
+from . import mbox_wrapper, AbstractFlatItemModel
 
 log = logging.getLogger(__name__)
 
@@ -28,7 +28,7 @@ class MessagesList(QTreeView):
         self.scrollTo(ix, QAbstractItemView.EnsureVisible)
 
 
-class MessagesListModel(QAbstractItemModel):
+class MessagesListModel(AbstractFlatItemModel):
     def __init__(self, nid=None):
         super().__init__()
         self.nid = nid
@@ -60,28 +60,13 @@ class MessagesListModel(QAbstractItemModel):
                 page=self.page_size)):
             self.model_data[page*self.page_size+entry] = message
 
-    def columnCount(self, _parent):
-        return len(self.message_attr) + 1
-
-    def rowCount(self, parent):
-        if parent.isValid():
-            return 0  # няма деца
+    def row_count(self):
         if self.nid is None:
             return 0
         return self.rows
 
-    @staticmethod
-    def parent(_child):
-        # представлява плосък списък
-        return QModelIndex()
-
-    @staticmethod
-    def hasChildren(parent):
-        return not parent.isValid()
-
-    def index(self, row, col, _parent=None):
-        idx = self.createIndex(row, col)
-        return idx
+    def columnCount(self, _parent):
+        return len(self.message_attr) + 1
 
     def headerData(self, section, _orientation, role):
         # https://doc.qt.io/qtforpython/PySide6/QtCore/Qt.html

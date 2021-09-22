@@ -7,9 +7,9 @@ from datetime import datetime
 import logging
 
 from PyQt5.QtWidgets import QDialog, QDialogButtonBox, QVBoxLayout, QTreeView, QAbstractItemView
-from PyQt5.QtCore import Qt, QAbstractItemModel, QModelIndex
+from PyQt5.QtCore import Qt
 
-from . import mbox_wrapper, global_env
+from . import mbox_wrapper, global_env, AbstractFlatItemModel
 
 log = logging.getLogger(__name__)
 
@@ -75,7 +75,7 @@ class PstFilesDialog(QDialog):
         self.body.setFocus()
 
 
-class PstFilesListModel(QAbstractItemModel):
+class PstFilesListModel(AbstractFlatItemModel):
     def __init__(self):
         super().__init__()
         self.message_attr = ('Име на файла', 'Размер [MB]', 'От дата')
@@ -106,25 +106,11 @@ class PstFilesListModel(QAbstractItemModel):
                     break
         return self.createIndex(found, 0)
 
-    def columnCount(self, _parent):
-        return len(self.message_attr) + 1
-
-    def rowCount(self, parent):
-        if parent.isValid():
-            return 0
+    def row_count(self):
         return len(self.model_data) if self.model_data is not None else 0
 
-    @staticmethod
-    def parent(_child):
-        return QModelIndex()
-
-    @staticmethod
-    def hasChildren(parent):
-        return not parent.isValid()
-
-    def index(self, row, col, _parent=None):
-        idx = self.createIndex(row, col)
-        return idx
+    def columnCount(self, _parent):
+        return len(self.message_attr) + 1
 
     def headerData(self, section, _orientation, role):
         if role == Qt.DisplayRole:
