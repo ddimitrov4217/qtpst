@@ -2,10 +2,11 @@
 # vim:ft=python:et:ts=4:sw=4:ai
 
 from sys import exit
-from PyQt5.QtWidgets import QApplication, QVBoxLayout, QWidget, QStyle
+from PyQt5.QtWidgets import QApplication, QMainWindow, QStyle, QToolBar, QAction
+from .pstfiles import PstFilesDialog
 
 
-class App(QWidget):
+class App(QMainWindow):
     def __init__(self):
         super().__init__()
         self.initUI()
@@ -15,8 +16,20 @@ class App(QWidget):
         icon = self.style().standardIcon(QStyle.SP_TitleBarMenuButton)
         self.setWindowIcon(icon)
         self.resize(900, 500)
-        layout = QVBoxLayout()
-        self.setLayout(layout)
+
+        toolbar = QToolBar('global actions')
+        toolbar.setFloatable(False)
+        toolbar.setMovable(False)
+        self.addToolBar(toolbar)
+
+        self.pstDialog = PstFilesDialog(self)
+        btnOpen = QAction('Open', self)
+        btnOpen.setStatusTip('Избор и отваряне на pst файл')
+        btnOpen.triggered.connect(self.openPstFile)
+        toolbar.addAction(btnOpen)
+
+    def openPstFile(self):
+        self.pstDialog.chooseFile()
 
 
 def main():
