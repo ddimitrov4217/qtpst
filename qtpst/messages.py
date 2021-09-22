@@ -5,7 +5,7 @@ import logging
 from PyQt5.QtWidgets import QTreeView, QAbstractItemView
 from PyQt5.QtCore import Qt, QAbstractItemModel, QModelIndex, QItemSelectionModel, QSize
 
-from wxpst.model import mbox_wrapper
+from . import mbox_wrapper
 
 log = logging.getLogger(__name__)
 

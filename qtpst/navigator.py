@@ -7,8 +7,8 @@ from collections import namedtuple
 from PyQt5.QtWidgets import QTreeWidget, QTreeWidgetItem, QStyle, QAbstractItemView
 from PyQt5.QtCore import Qt, QItemSelectionModel
 
-from wxpst.model import mbox_wrapper
 from readms.readpst import PropertyContext
+from . import mbox_wrapper
 
 MboxNode = namedtuple('MboxNode', ['name', 'mcnt', 'tcnt', 'nid', 'children'])
 log = logging.getLogger(__name__)

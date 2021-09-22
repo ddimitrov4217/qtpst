@@ -2,7 +2,7 @@
 # vim:ft=python:et:ts=4:sw=4:ai
 
 from PyQt5.QtWidgets import QDialog, QDialogButtonBox, QVBoxLayout, QLabel
-from wxpst.model import mbox_wrapper
+from . import mbox_wrapper
 
 
 def read_pst(pst_file):
