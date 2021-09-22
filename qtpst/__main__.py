@@ -1,11 +1,18 @@
 # -*- coding: UTF-8 -*-
 # vim:ft=python:et:ts=4:sw=4:ai
 
-from sys import exit
-from PyQt5.QtWidgets import QApplication, QMainWindow, QStyle, QToolBar, QAction, QSplitter
+import sys
+import traceback
+import logging
+
+from PyQt5.QtWidgets import QApplication, QMainWindow, QToolBar, QMessageBox
+from PyQt5.QtWidgets import QStyle, QAction, QSplitter
+
 from . pstfiles import PstFilesDialog
 from . navigator import MboxNavigator
 from . messages import MessagesList
+
+log = logging.getLogger(__name__)
 
 
 class App(QMainWindow):
@@ -44,11 +51,28 @@ class App(QMainWindow):
         self.pstDialog.chooseFile()
 
 
+def exception_hook(_etype, value, trace):
+    text = traceback.format_tb(trace)
+    text.insert(0, '%s\n' % value)
+    text = ''.join(text)
+    log.error(text)
+
+    if QApplication.instance() is not None:
+        dialog = QMessageBox.critical(
+            None, 'Грешка', text,
+            buttons=QMessageBox.Ignore | QMessageBox.Abort,
+            defaultButton=QMessageBox.Ignore)
+
+        if dialog == QMessageBox.Abort:
+            sys.exit(127)
+
+
 def main():
+    sys.excepthook = exception_hook
     app = QApplication([])
     ex = App()
     ex.show()
-    exit(app.exec_())
+    sys.exit(app.exec_())
 
 
 if __name__ == '__main__':
