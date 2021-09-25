@@ -6,6 +6,7 @@ import logging
 from PyQt5.QtWidgets import QWidget, QTabWidget, QVBoxLayout
 from readms.readmsg import PropertiesStream, Message, Attachment
 from . attributes import AttributesList
+from . body import PlainTextBody, HtmlBody
 
 log = logging.getLogger(__name__)
 
@@ -51,27 +52,47 @@ class TopMessageWidget(QWidget):
     def init_ui(self):
         tabs = QTabWidget(self)
 
-        # TODO Добавяне на панел за body (text), ако има
-        # TODO Добавяне на панел за body (html), ако има
         # TODO Добавяне на панел за body (rtf), ако има и може
         # TODO Добавяне на панел за приложените файлове, ако има
         # TODO Добавяне на панел за приложените съобщения, ако има
 
-        tabs.addTab(self.add_attrs_lists(), 'Всички атрибути')
+        self.add_plain_text_body(tabs)
+        self.add_html_body(tabs)
+        self.add_attrs_lists(tabs)
 
         layout = QVBoxLayout()
         layout.addWidget(tabs)
         self.setLayout(layout)
         self.show()
 
-    def add_attrs_lists(self):
+    def add_attrs_lists(self, tabs):
         plainTabs = QTabWidget(self)
         plainTabs.setTabPosition(QTabWidget.North)
         plainTabs.addTab(AttributesList(self.attrs.properties), 'Съобщение')
+
         for eno, entry in enumerate(self.attrs.recipients):
             tabname = 'Получател %d' % (eno+1)
             plainTabs.addTab(AttributesList(entry.properties), tabname)
         for eno, entry in enumerate(self.attrs.attachments):
             tabname = 'Приложение %d' % (eno+1)
             plainTabs.addTab(AttributesList(entry.properties), tabname)
-        return plainTabs
+
+        tabs.addTab(plainTabs, 'Всички атрибути')
+
+    def find_attr_by_name(self, name):
+        for pc in self.attrs.properties:
+            if pc.prop['propCode'] == name:
+                return pc
+        return None
+
+    def add_plain_text_body(self, tabs):
+        pc = self.find_attr_by_name('Body')
+        if pc is not None:
+            widget = PlainTextBody(pc.value.get_value())
+            tabs.addTab(widget, 'Текст на съобщението')
+
+    def add_html_body(self, tabs):
+        pc = self.find_attr_by_name('Html')
+        if pc is not None:
+            widget = HtmlBody(pc.value.get_value())
+            tabs.addTab(widget, 'Съобщението ато HTML')
