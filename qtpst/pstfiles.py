@@ -27,10 +27,10 @@ def read_pst(pst_file):
 class PstFilesDialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setupUI()
+        self.setup_ui()
         self.changed = False
 
-    def setupUI(self):
+    def setup_ui(self):
         self.setWindowTitle('Изберете pst файл')
         buttons = QDialogButtonBox.Open | QDialogButtonBox.Cancel
         self.buttonBox = QDialogButtonBox(buttons)
@@ -44,10 +44,19 @@ class PstFilesDialog(QDialog):
         for col, width in enumerate((50, 150, 70, 100)):
             self.body.setColumnWidth(col, width)
 
+        # TODO Общ стил за цялата програма
+        self.body.setStyleSheet("""
+        QTreeView::item {
+            padding-top: 2;
+            padding-bottom: 2;
+        }
+        """)
+        self.body.setAlternatingRowColors(True)
+
         self.layout.addWidget(self.body)
         self.layout.addWidget(self.buttonBox)
         self.setLayout(self.layout)
-        self.resize(350, 300)
+        self.resize(370, 300)
 
     def open_file(self):
         self.changed = False

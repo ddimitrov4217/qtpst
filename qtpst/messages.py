@@ -23,6 +23,15 @@ class MessagesList(QTreeView):
         for col, width in enumerate((50, 120, 70, 100, 300)):
             self.setColumnWidth(col, width)
 
+        # TODO Общ стил за цялата програма
+        self.setStyleSheet("""
+        QTreeView::item {
+            padding-top: 2;
+            padding-bottom: 2;
+        }
+        """)
+        self.setAlternatingRowColors(True)
+
     def set_nid(self, nid):
         self.model().set_nid(nid)
         ix = self.model().createIndex(0, 0)
