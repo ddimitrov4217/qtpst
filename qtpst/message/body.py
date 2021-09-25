@@ -17,13 +17,7 @@ class PlainTextBody(QTextEdit):
     def setup_ui(self):
         self.setReadOnly(True)
         self.setLineWrapMode(QTextEdit.WidgetWidth)
-        # TODO Общ стил на програмата
-        self.setStyleSheet("""
-        QTextEdit {
-            font-family: Liberation Mono;
-            font-size: 10pt;
-        }
-        """)
+        self.setObjectName('plainMessage')
 
 
 class HtmlBody(QTextEdit):

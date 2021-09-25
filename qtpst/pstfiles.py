@@ -44,13 +44,7 @@ class PstFilesDialog(QDialog):
         for col, width in enumerate((50, 150, 70, 100)):
             self.body.setColumnWidth(col, width)
 
-        # TODO Общ стил за цялата програма
-        self.body.setStyleSheet("""
-        QTreeView::item {
-            padding-top: 2;
-            padding-bottom: 2;
-        }
-        """)
+        self.body.setObjectName('pstFiles')
         self.body.setAlternatingRowColors(True)
 
         self.layout.addWidget(self.body)

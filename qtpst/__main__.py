@@ -51,6 +51,7 @@ class AppNavigator(QMainWindow):
         splitter.setStretchFactor(0, 5)
         splitter.setStretchFactor(1, 9)
         self.setCentralWidget(splitter)
+        self.setStyleSheet(app_css())
 
     def set_title(self):
         name = 'Архиви на имейл кутия'
@@ -79,6 +80,7 @@ class AppMessage(QMainWindow):
         self.setWindowIcon(icon)
         self.setCentralWidget(self.message_panel)
         self.resize(700, 500)
+        self.setStyleSheet(app_css())
 
 
 def exception_hook(_etype, value, trace):
@@ -95,6 +97,12 @@ def exception_hook(_etype, value, trace):
 
         if dialog == QMessageBox.Abort:
             sys.exit(127)
+
+
+def app_css():
+    css_file = path.join(path.dirname(__file__), 'resources', 'app.css')
+    with open(css_file, encoding='UTF-8') as fin:
+        return fin.read()
 
 
 def run_navigator_app(pstfile):

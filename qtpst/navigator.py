@@ -28,6 +28,7 @@ class MboxNavigator(QTreeWidget):
             self.setColumnWidth(col, width)
         self.setHeaderLabels(['Папка', 'Съобщения', 'Директни', ''])
         self.currentItemChanged.connect(self.handle_item_clicked)
+        self.setObjectName('navigator')
 
     def load_tree_nodes(self):
         items = []

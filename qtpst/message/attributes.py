@@ -25,13 +25,7 @@ class AttributesList(QTreeView):
         for col, width in enumerate((0, 200, 70, 50, 300)):
             self.setColumnWidth(col, width)
 
-        # TODO Общ style за цялата програма от едно място
-        self.setStyleSheet("""
-        QTreeView::item {
-            padding-top: 2;
-            padding-bottom: 2;
-        }
-        """)
+        self.setObjectName('attrsList')
         self.setAlternatingRowColors(True)
 
         ix = self.model().createIndex(0, 0)
