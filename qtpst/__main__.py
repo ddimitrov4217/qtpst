@@ -18,12 +18,12 @@ from . messages import MessagesList
 log = logging.getLogger(__name__)
 
 
-class App(QMainWindow):
+class AppNavigator(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.initUI()
+        self.init_ui()
 
-    def initUI(self):
+    def init_ui(self):
         self.set_title()
         icon = self.style().standardIcon(QStyle.SP_TitleBarMenuButton)
         self.setWindowIcon(icon)
@@ -83,14 +83,14 @@ def exception_hook(_etype, value, trace):
 
 def run_navigator_app(pstfile):
     sys.excepthook = exception_hook
-    app = QApplication([])
-    ex = App()
+    qapp = QApplication([])
+    app = AppNavigator()
     if pstfile is not None:
         read_pst(pstfile)
-        ex.set_title()
-        ex.navigator.load_tree_nodes()
-    ex.show()
-    sys.exit(app.exec_())
+        app.set_title()
+        app.navigator.load_tree_nodes()
+    app.show()
+    sys.exit(qapp.exec_())
 
 
 @click.group(name='qtpst', help='Четене на изпозлваните от MS Outlook файлове')
