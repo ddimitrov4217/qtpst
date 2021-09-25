@@ -3,8 +3,9 @@
 
 import logging
 
-from PyQt5.QtWidgets import QWidget
+from PyQt5.QtWidgets import QWidget, QTabWidget, QVBoxLayout
 from readms.readmsg import PropertiesStream, Message, Attachment
+from . attributes import AttributesList
 
 log = logging.getLogger(__name__)
 
@@ -48,10 +49,23 @@ class TopMessageWidget(QWidget):
         self.init_ui()
 
     def init_ui(self):
-        # TODO Добавяне на панели за атрибутите
+        tabs = QTabWidget(self)
+        self.add_attrs_lists(tabs)
+
         # TODO Добавяне на панел за body (text), ако има
         # TODO Добавяне на панел за body (html), ако има
         # TODO Добавяне на панел за body (rtf), ако има и може
         # TODO Добавяне на панел за приложените файлове, ако има
         # TODO Добавяне на панел за приложените съобщения, ако има
+
+        layout = QVBoxLayout()
+        layout.addWidget(tabs)
+        self.setLayout(layout)
+
         self.show()
+
+    def add_attrs_lists(self, tabs):
+        tabs.addTab(AttributesList(self.attrs.properties), 'Съобщение')
+        for eno, entry in enumerate(self.attrs.recipients):
+            tabname = 'Получател %d' % (eno+1)
+            tabs.addTab(AttributesList(entry.properties), tabname)
