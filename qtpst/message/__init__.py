@@ -50,7 +50,6 @@ class TopMessageWidget(QWidget):
 
     def init_ui(self):
         tabs = QTabWidget(self)
-        self.add_attrs_lists(tabs)
 
         # TODO Добавяне на панел за body (text), ако има
         # TODO Добавяне на панел за body (html), ако има
@@ -58,14 +57,21 @@ class TopMessageWidget(QWidget):
         # TODO Добавяне на панел за приложените файлове, ако има
         # TODO Добавяне на панел за приложените съобщения, ако има
 
+        tabs.addTab(self.add_attrs_lists(), 'Всички атрибути')
+
         layout = QVBoxLayout()
         layout.addWidget(tabs)
         self.setLayout(layout)
-
         self.show()
 
-    def add_attrs_lists(self, tabs):
-        tabs.addTab(AttributesList(self.attrs.properties), 'Съобщение')
+    def add_attrs_lists(self):
+        plainTabs = QTabWidget(self)
+        plainTabs.setTabPosition(QTabWidget.North)
+        plainTabs.addTab(AttributesList(self.attrs.properties), 'Съобщение')
         for eno, entry in enumerate(self.attrs.recipients):
             tabname = 'Получател %d' % (eno+1)
-            tabs.addTab(AttributesList(entry.properties), tabname)
+            plainTabs.addTab(AttributesList(entry.properties), tabname)
+        for eno, entry in enumerate(self.attrs.attachments):
+            tabname = 'Приложение %d' % (eno+1)
+            plainTabs.addTab(AttributesList(entry.properties), tabname)
+        return plainTabs
