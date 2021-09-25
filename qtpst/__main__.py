@@ -14,6 +14,7 @@ from . import mbox_wrapper, global_env
 from . pstfiles import PstFilesDialog, read_pst
 from . navigator import MboxNavigator
 from . messages import MessagesList
+from . message import create_widget_msg
 
 log = logging.getLogger(__name__)
 
@@ -65,6 +66,21 @@ class AppNavigator(QMainWindow):
             self.navigator.load_tree_nodes()
 
 
+class AppMessage(QMainWindow):
+    def __init__(self, msgfile):
+        super().__init__()
+        self.msgfile = msgfile
+        self.message_panel = create_widget_msg(self.msgfile)
+        self.init_ui()
+
+    def init_ui(self):
+        self.setWindowTitle(self.msgfile)
+        icon = self.style().standardIcon(QStyle.SP_TitleBarMenuButton)
+        self.setWindowIcon(icon)
+        self.setCentralWidget(self.message_panel)
+        self.resize(700, 500)
+
+
 def exception_hook(_etype, value, trace):
     text = traceback.format_tb(trace)
     text.insert(0, '%s\n' % value)
@@ -93,6 +109,14 @@ def run_navigator_app(pstfile):
     sys.exit(qapp.exec_())
 
 
+def run_message_app(msgfile):
+    sys.excepthook = exception_hook
+    qapp = QApplication([])
+    app = AppMessage(path.abspath(msgfile))
+    app.show()
+    sys.exit(qapp.exec_())
+
+
 @click.group(name='qtpst', help='Четене на изпозлваните от MS Outlook файлове')
 @click.option('--config', type=click.Path(exists=True), help='конфигурационен файл')
 def cli(config=None):
@@ -109,6 +133,13 @@ def cli(config=None):
 def navigator(file):
     mbox_wrapper.init_mbox_wrapper(global_env.config)
     run_navigator_app(file)
+
+
+@cli.command(name='message', help='Избор и разглеждане на msg файл')
+@click.option('--file', type=click.Path(exists=True), help='msg файл за разглеждане')
+def message(file):
+    mbox_wrapper.init_mbox_wrapper(global_env.config)
+    run_message_app(file)
 
 
 if __name__ == '__main__':
