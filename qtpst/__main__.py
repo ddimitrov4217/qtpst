@@ -85,7 +85,7 @@ def exception_hook(_etype, value, trace):
     text = traceback.format_tb(trace)
     text.insert(0, '%s\n' % value)
     text = ''.join(text)
-    log.error(text)
+    print(text, file=sys.stderr)
 
     if QApplication.instance() is not None:
         dialog = QMessageBox.critical(
