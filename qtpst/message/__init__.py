@@ -7,6 +7,7 @@ from PyQt5.QtWidgets import QWidget, QTabWidget, QVBoxLayout
 from readms.readmsg import PropertiesStream, Message, Attachment
 from . attributes import AttributesList
 from . body import PlainTextBody, HtmlBody
+from . nidmodel import read_nid
 
 log = logging.getLogger(__name__)
 
@@ -16,13 +17,13 @@ def dump_attrs(attrs):
         name = '%s%s' % ('  '*level, entry.__class__.__name__)
         log.debug('%-19s%4d %s', name, len(entry.properties), entry.name)
 
-        if isinstance(entry, Message):
+        if entry.__class__.__name__ == 'Message':
             for re_ in entry.recipients:
                 dump_entry(re_, level+1)
             for re_ in entry.attachments:
                 dump_entry(re_, level+1)
 
-        if isinstance(entry, Attachment):
+        if entry.__class__.__name__ == 'Attachment':
             if entry.message is not None:
                 dump_entry(entry.message, level+1)
 
@@ -38,8 +39,9 @@ def create_widget_msg(msgfile):
 
 
 def create_widget_nid(nid):
-    attrs = None  # TODO Прочитане на nid до обща структура с атрибути
     log.info(nid)
+    attrs = read_nid(nid)
+    dump_attrs(attrs)
     return TopMessageWidget(attrs)
 
 

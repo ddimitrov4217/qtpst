@@ -14,7 +14,7 @@ from . import mbox_wrapper, global_env
 from . pstfiles import PstFilesDialog, read_pst
 from . navigator import MboxNavigator
 from . messages import MessagesList
-from . message import create_widget_msg
+from . message import create_widget_msg, create_widget_nid
 
 log = logging.getLogger(__name__)
 
@@ -68,14 +68,19 @@ class AppNavigator(QMainWindow):
 
 
 class AppMessage(QMainWindow):
-    def __init__(self, msgfile):
+    def __init__(self, msgfile, nid=None):
         super().__init__()
-        self.msgfile = msgfile
-        self.message_panel = create_widget_msg(self.msgfile)
+        if nid is not None:
+            # това се изпозлва само за тестване
+            read_pst(msgfile)
+            self.message_panel = create_widget_nid(nid)
+            self.setWindowTitle('%s (%d)' % (msgfile, nid))
+        else:
+            self.message_panel = create_widget_msg(msgfile)
+            self.setWindowTitle(msgfile)
         self.init_ui()
 
     def init_ui(self):
-        self.setWindowTitle(self.msgfile)
         icon = self.style().standardIcon(QStyle.SP_TitleBarMenuButton)
         self.setWindowIcon(icon)
         self.setCentralWidget(self.message_panel)
@@ -117,10 +122,10 @@ def run_navigator_app(pstfile):
     sys.exit(qapp.exec_())
 
 
-def run_message_app(msgfile):
+def run_message_app(msgfile, nid=None):
     sys.excepthook = exception_hook
     qapp = QApplication([])
-    app = AppMessage(path.abspath(msgfile))
+    app = AppMessage(path.abspath(msgfile), nid)
     app.show()
     sys.exit(qapp.exec_())
 
@@ -136,6 +141,8 @@ def cli(config=None):
     global_env.setup_env(config_file)
 
 
+# TODO file е винаги задължителен параметър
+
 @cli.command(name='navigator', help='Избор и разглеждане на pst файлове')
 @click.option('--file', type=click.Path(exists=True), help='pst файл за разглеждане')
 def navigator(file):
@@ -145,9 +152,10 @@ def navigator(file):
 
 @cli.command(name='message', help='Избор и разглеждане на msg файл')
 @click.option('--file', type=click.Path(exists=True), help='msg файл за разглеждане')
-def message(file):
+@click.option('--nid', type=int, help='nid от pst файл')
+def message(file, nid=None):
     mbox_wrapper.init_mbox_wrapper(global_env.config)
-    run_message_app(file)
+    run_message_app(file, nid)
 
 
 if __name__ == '__main__':
