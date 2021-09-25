@@ -1,10 +1,15 @@
 # -*- coding: UTF-8 -*-
 # vim:ft=python:et:ts=4:sw=4:ai
 
+from codecs import decode
+
 import logging
 
 from PyQt5.QtWidgets import QWidget, QTabWidget, QVBoxLayout
-from readms.readmsg import PropertiesStream, Message, Attachment
+
+from readms.readmsg import PropertiesStream, Message
+from readms.metapst import get_internet_code_page
+
 from . attributes import AttributesList
 from . body import PlainTextBody, HtmlBody
 from . nidmodel import read_nid
@@ -58,8 +63,8 @@ class TopMessageWidget(QWidget):
         # TODO Добавяне на панел за приложените файлове, ако има
         # TODO Добавяне на панел за приложените съобщения, ако има
 
-        self.add_plain_text_body(tabs)
         self.add_html_body(tabs)
+        self.add_plain_text_body(tabs)
         self.add_attrs_lists(tabs)
 
         layout = QVBoxLayout()
@@ -95,6 +100,10 @@ class TopMessageWidget(QWidget):
 
     def add_html_body(self, tabs):
         pc = self.find_attr_by_name('Html')
-        if pc is not None:
-            widget = HtmlBody(pc.value.get_value())
-            tabs.addTab(widget, 'Съобщението ато HTML')
+        ec = self.find_attr_by_name('InternetCodepage')
+        if pc is not None and ec is not None:
+            raw_value = pc.value.get_value()
+            code_page = get_internet_code_page(ec.value.get_value())
+            body_html = decode(raw_value.data, code_page, 'replace')
+            widget = HtmlBody(body_html, self.attrs.attachments)
+            tabs.addTab(widget, 'Съобщението като HTML')

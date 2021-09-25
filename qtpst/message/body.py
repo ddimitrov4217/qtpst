@@ -25,6 +25,8 @@ class HtmlBody(QTextEdit):
         super().__init__()
         self.setHtml(text)
         self.attachments = attachments
+        self.setup_ui()
+        self.setObjectName('bodyHtml')
 
     def setup_ui(self):
         self.setReadOnly(True)
