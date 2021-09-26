@@ -12,7 +12,7 @@ from readms.metapst import get_internet_code_page
 
 from . attributes import AttributesList
 from . body import PlainTextBody, HtmlBody
-from . nidmodel import read_nid
+from . model import read_nid
 from .. import app_css
 
 log = logging.getLogger(__name__)
