@@ -4,7 +4,7 @@
 from abc import abstractmethod
 from os import path
 from PyQt5.QtCore import QAbstractItemModel, QModelIndex
-from wxpst.model import mbox_wrapper, global_env
+from wxpst.model import mbox_wrapper, global_env, temp_file
 
 
 class AbstractFlatItemModel(QAbstractItemModel):

@@ -10,7 +10,7 @@ import click
 from PyQt5.QtWidgets import QApplication, QMainWindow, QToolBar, QMessageBox
 from PyQt5.QtWidgets import QStyle, QAction, QSplitter
 
-from . import mbox_wrapper, global_env, app_css
+from . import mbox_wrapper, global_env, app_css, temp_file
 from . pstfiles import PstFilesDialog, read_pst
 from . navigator import MboxNavigator
 from . messages import MessagesList
@@ -87,16 +87,17 @@ def exception_hook(_etype, value, trace):
             sys.exit(127)
 
 
-def run_navigator_app(pstfile):
+def run_prepare():
+    mbox_wrapper.init_mbox_wrapper(global_env.config)
     sys.excepthook = exception_hook
-    qapp = QApplication([])
-    app = AppNavigator()
-    if pstfile is not None:
-        read_pst(pstfile)
-        app.set_title()
-        app.navigator.load_tree_nodes()
+    return QApplication([])
+
+
+def run_start(app, tapp):
     app.show()
-    sys.exit(qapp.exec_())
+    status = tapp.exec_()
+    temp_file.cleanup()
+    sys.exit(status)
 
 
 @click.group(name='qtpst', help='Четене на изпозлваните от MS Outlook файлове')
@@ -113,27 +114,26 @@ def cli(config=None):
 @cli.command(name='navigator', help='Избор и разглеждане на pst файлове')
 @click.option('--file', type=click.Path(exists=True), help='pst файл за разглеждане')
 def navigator(file):
-    mbox_wrapper.init_mbox_wrapper(global_env.config)
-    run_navigator_app(file)
+    tapp = run_prepare()
+    app = AppNavigator()
+    if file is not None:
+        read_pst(file)
+        app.set_title()
+        app.navigator.load_tree_nodes()
+    run_start(app, tapp)
 
 
 @cli.command(name='message', help='Избор и разглеждане на msg файл')
 @click.argument('file', type=click.Path(exists=True))
 @click.option('--nid', type=int, help='nid от pst файл')
 def message(file, nid=None):
-    mbox_wrapper.init_mbox_wrapper(global_env.config)
-    sys.excepthook = exception_hook
-
-    qapp = QApplication([])
-
+    tapp = run_prepare()
     if nid is not None:
         read_pst(file)
         app = AppMessageNid(nid)
     else:
         app = AppMessageFile(file)
-
-    app.show()
-    sys.exit(qapp.exec_())
+    run_start(app, tapp)
 
 
 if __name__ == '__main__':
