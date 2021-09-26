@@ -2,6 +2,7 @@
 # vim:ft=python:et:ts=4:sw=4:ai
 
 from abc import abstractmethod
+from os import path
 from PyQt5.QtCore import QAbstractItemModel, QModelIndex
 from wxpst.model import mbox_wrapper, global_env
 
@@ -27,3 +28,9 @@ class AbstractFlatItemModel(QAbstractItemModel):
     @abstractmethod
     def row_count(self):
         pass
+
+
+def app_css():
+    css_file = path.join(path.dirname(__file__), 'resources', 'app.css')
+    with open(css_file, encoding='UTF-8') as fin:
+        return fin.read()

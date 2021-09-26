@@ -10,11 +10,11 @@ import click
 from PyQt5.QtWidgets import QApplication, QMainWindow, QToolBar, QMessageBox
 from PyQt5.QtWidgets import QStyle, QAction, QSplitter
 
-from . import mbox_wrapper, global_env
+from . import mbox_wrapper, global_env, app_css
 from . pstfiles import PstFilesDialog, read_pst
 from . navigator import MboxNavigator
 from . messages import MessagesList
-from . message import create_widget_msg, create_widget_nid
+from . message import AppMessageFile, AppMessageNid
 
 log = logging.getLogger(__name__)
 
@@ -67,31 +67,6 @@ class AppNavigator(QMainWindow):
             self.navigator.load_tree_nodes()
 
 
-class AppMessage(QMainWindow):
-    def init_ui(self):
-        icon = self.style().standardIcon(QStyle.SP_TitleBarMenuButton)
-        self.setWindowIcon(icon)
-        self.setCentralWidget(self.message_panel)
-        self.resize(700, 500)
-        self.setStyleSheet(app_css())
-
-
-class AppMessageFile(AppMessage):
-    def __init__(self, msgfile):
-        super().__init__()
-        self.message_panel = create_widget_msg(msgfile)
-        self.setWindowTitle(msgfile)
-        self.init_ui()
-
-
-class AppMessageNid(AppMessage):
-    def __init__(self, nid):
-        super().__init__()
-        self.message_panel = create_widget_nid(nid)
-        self.setWindowTitle(str(nid))
-        self.init_ui()
-
-
 def exception_hook(_etype, value, trace):
     text = traceback.format_tb(trace)
     text.insert(0, '%s\n' % value)
@@ -106,12 +81,6 @@ def exception_hook(_etype, value, trace):
 
         if dialog == QMessageBox.Abort:
             sys.exit(127)
-
-
-def app_css():
-    css_file = path.join(path.dirname(__file__), 'resources', 'app.css')
-    with open(css_file, encoding='UTF-8') as fin:
-        return fin.read()
 
 
 def run_navigator_app(pstfile):

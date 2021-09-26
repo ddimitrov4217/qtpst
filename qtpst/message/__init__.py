@@ -5,7 +5,7 @@ from codecs import decode
 
 import logging
 
-from PyQt5.QtWidgets import QWidget, QTabWidget, QVBoxLayout
+from PyQt5.QtWidgets import QWidget, QTabWidget, QVBoxLayout, QMainWindow, QStyle
 
 from readms.readmsg import PropertiesStream, Message
 from readms.metapst import get_internet_code_page
@@ -13,6 +13,7 @@ from readms.metapst import get_internet_code_page
 from . attributes import AttributesList
 from . body import PlainTextBody, HtmlBody
 from . nidmodel import read_nid
+from .. import app_css
 
 log = logging.getLogger(__name__)
 
@@ -107,3 +108,28 @@ class TopMessageWidget(QWidget):
             body_html = decode(raw_value.data, code_page, 'replace')
             widget = HtmlBody(body_html, self.attrs.attachments)
             tabs.addTab(widget, 'Съобщението като HTML')
+
+
+class AppMessage(QMainWindow):
+    def init_ui(self):
+        icon = self.style().standardIcon(QStyle.SP_TitleBarMenuButton)
+        self.setWindowIcon(icon)
+        self.setCentralWidget(self.message_panel)
+        self.resize(700, 500)
+        self.setStyleSheet(app_css())
+
+
+class AppMessageFile(AppMessage):
+    def __init__(self, msgfile):
+        super().__init__()
+        self.message_panel = create_widget_msg(msgfile)
+        self.setWindowTitle(msgfile)
+        self.init_ui()
+
+
+class AppMessageNid(AppMessage):
+    def __init__(self, nid):
+        super().__init__()
+        self.message_panel = create_widget_nid(nid)
+        self.setWindowTitle(str(nid))
+        self.init_ui()
