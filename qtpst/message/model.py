@@ -86,8 +86,6 @@ class MessageNid(Message):
 
         for ano, att_ in enumerate(mbox_wrapper.mbox.list_attachments(nid)):
             _nid, anid, name, size, mimet, _mime, cid = att_
-
-            # TODO Зареждането на целите приложения бави отварянето
             _data_mime, data_name, data = mbox_wrapper.mbox.get_attachment(nid, anid)
 
             att = Attachment()

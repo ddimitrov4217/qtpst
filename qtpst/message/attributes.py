@@ -6,6 +6,7 @@ import re
 
 from PyQt5.QtWidgets import QTreeView
 from PyQt5.QtCore import Qt, QItemSelectionModel
+from readms.readpst import PropertyValue
 
 from .. import AbstractFlatItemModel
 
@@ -20,7 +21,7 @@ class AttributesList(QTreeView):
 
     def init_ui(self):
         self.setColumnHidden(0, True)
-        for col, width in enumerate((0, 200, 70, 50, 300)):
+        for col, width in enumerate((0, 200, 60, 70, 300)):
             self.setColumnWidth(col, width)
 
         self.setObjectName('attrsList')
@@ -59,9 +60,13 @@ class AttributesListModel(AbstractFlatItemModel):
 
         if index.row() not in self.props_display:
             attv = self.props[index.row()]
-            value = str(attv.value)
-            value = re.sub('[\r\n]', ' ', value)
-            value = value[:64]
+            if not isinstance(attv.value, PropertyValue.BinaryValue):
+                value = str(attv.value)
+                value = re.sub('[\r\n]', ' ', value)
+                value = value[:64]
+            else:
+                value = PropertyValue.BinaryValue(attv.value.data[:16])
+                value = str(value)
 
             vsize = '{0:,d}'.format(attv.vsize)
             self.props_display[index.row()] = attv.code, attv.vtype, vsize, value
