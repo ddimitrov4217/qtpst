@@ -66,6 +66,10 @@ class AppNavigator(QMainWindow):
             self.set_title()
             self.navigator.load_tree_nodes()
 
+    def closeEvent(self, event):
+        self.messages.handle_close()
+        super().closeEvent(event)
+
 
 def exception_hook(_etype, value, trace):
     text = traceback.format_tb(trace)

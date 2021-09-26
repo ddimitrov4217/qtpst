@@ -5,17 +5,21 @@ import re
 import logging
 
 from PyQt5.QtWidgets import QTreeView, QAbstractItemView
-from PyQt5.QtCore import Qt, QItemSelectionModel
+from PyQt5.QtCore import Qt, QItemSelectionModel, pyqtSignal
 
 from . import mbox_wrapper, AbstractFlatItemModel
+from . message import AppMessageNid
 
 log = logging.getLogger(__name__)
 
 
 class MessagesList(QTreeView):
+    key_pressed = pyqtSignal(int)
+
     def __init__(self):
         super().__init__()
         self.initUI()
+        self.opened_messages = []
 
     def initUI(self):
         self.setModel(MessagesListModel())
@@ -25,12 +29,32 @@ class MessagesList(QTreeView):
 
         self.setObjectName('messages')
         self.setAlternatingRowColors(True)
+        self.doubleClicked.connect(self.handle_open)
+        self.key_pressed.connect(self.hande_enter)
 
     def set_nid(self, nid):
         self.model().set_nid(nid)
         ix = self.model().createIndex(0, 0)
         self.selectionModel().select(ix, QItemSelectionModel.Select | QItemSelectionModel.Rows)
         self.scrollTo(ix, QAbstractItemView.EnsureVisible)
+
+    def handle_open(self, index):
+        nid = self.model().model_data[index.row()][0]
+        app = AppMessageNid(nid)
+        self.opened_messages.append(app)
+        app.show()
+
+    def hande_enter(self, key):
+        if key in (Qt.Key_Return, Qt.Key_Enter):
+            self.handle_open(self.selectedIndexes()[0])
+
+    def handle_close(self):
+        for app in self.opened_messages:
+            app.close()
+
+    def keyPressEvent(self, event):
+        super().keyPressEvent(event)
+        self.key_pressed.emit(event.key())
 
 
 class MessagesListModel(AbstractFlatItemModel):
