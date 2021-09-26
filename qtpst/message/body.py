@@ -4,6 +4,7 @@
 import logging
 
 from PyQt5.QtWidgets import QTextEdit
+from .. import temp_file
 
 log = logging.getLogger(__name__)
 
@@ -23,12 +24,19 @@ class PlainTextBody(QTextEdit):
 class HtmlBody(QTextEdit):
     def __init__(self, text, attachments):
         super().__init__()
-        self.setHtml(text)
         self.attachments = attachments
+        self.text = text
         self.setup_ui()
         self.setObjectName('bodyHtml')
 
     def setup_ui(self):
+        body_html = self.text
+        for att in self.attachments:
+            cid = att.dict.get('AttachContentId', None)
+            if cid is not None:
+                content = att.dict.get('AttachDataObject')
+                refname = temp_file.write_temp(content.value.data)
+                body_html = body_html.replace('cid:%s' % cid.value, refname)
+        self.setHtml(body_html)
         self.setReadOnly(True)
         self.setLineWrapMode(QTextEdit.WidgetWidth)
-        # TODO Извеждане на вложените картинки
