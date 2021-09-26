@@ -67,8 +67,8 @@ class Attachment(AttributesContainer):
 class MessageNid(Message):
     def __init__(self, nid):
         super().__init__()
-        self.pc = PropertyContext(mbox_wrapper.mbox.get_mbox(), nid)
 
+        self.pc = PropertyContext(mbox_wrapper.mbox.get_mbox(), nid)
         for pname in self.pc._propx:
             ptag = self.pc._propx[pname]
             pt = self.pc._props[ptag]['propType']
@@ -76,6 +76,37 @@ class MessageNid(Message):
             attv = create_att_value(pname, pv)
             self.properties.append(attv)
         self.load_dict()
+
+        def att_str(code, value):
+            vsize = len(value) if value is not None else 0
+            return AttributeValue(code=code, vtype='String', vsize=vsize, value=value)
+
+        def att_int(code, value):
+            return AttributeValue(code=code, vtype='Integer', vsize=4, value=value)
+
+        for ano, att_ in enumerate(mbox_wrapper.mbox.list_attachments(nid)):
+            _nid, anid, name, size, mimet, _mime, cid = att_
+
+            # TODO Зареждането на целите приложения бави отварянето
+            _data_mime, data_name, data = mbox_wrapper.mbox.get_attachment(nid, anid)
+
+            att = Attachment()
+            self.attachments.append(att)
+            att.properties.append(AttributeValue(
+                code='AttachDataObject', vtype='Binary', vsize=size,
+                value=PropertyValue.BinaryValue(data)))
+
+            att.properties.append(att_int('AttachNumber', ano))
+            att.properties.append(att_str('AttachFilename', name))
+            att.properties.append(att_str('AttachLongFilename', name))
+            att.properties.append(att_str('DisplayName', data_name))
+            att.properties.append(att_str('AttachMimeTag', mimet))
+            att.properties.append(att_str('AttachContentId', cid))
+
+            # TODO AttacheMethod, AttachmenHidden ObjectType
+            # TODO да се различават приложените съобщения и да се зареждат
+
+            att.load_dict()
 
 
 class MessageMsg(Message):
