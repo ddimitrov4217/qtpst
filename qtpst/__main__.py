@@ -68,24 +68,28 @@ class AppNavigator(QMainWindow):
 
 
 class AppMessage(QMainWindow):
-    def __init__(self, msgfile, nid=None):
-        super().__init__()
-        if nid is not None:
-            # това се изпозлва само за тестване
-            read_pst(msgfile)
-            self.message_panel = create_widget_nid(nid)
-            self.setWindowTitle('%s (%d)' % (msgfile, nid))
-        else:
-            self.message_panel = create_widget_msg(msgfile)
-            self.setWindowTitle(msgfile)
-        self.init_ui()
-
     def init_ui(self):
         icon = self.style().standardIcon(QStyle.SP_TitleBarMenuButton)
         self.setWindowIcon(icon)
         self.setCentralWidget(self.message_panel)
         self.resize(700, 500)
         self.setStyleSheet(app_css())
+
+
+class AppMessageFile(AppMessage):
+    def __init__(self, msgfile):
+        super().__init__()
+        self.message_panel = create_widget_msg(msgfile)
+        self.setWindowTitle(msgfile)
+        self.init_ui()
+
+
+class AppMessageNid(AppMessage):
+    def __init__(self, nid):
+        super().__init__()
+        self.message_panel = create_widget_nid(nid)
+        self.setWindowTitle(str(nid))
+        self.init_ui()
 
 
 def exception_hook(_etype, value, trace):
@@ -122,14 +126,6 @@ def run_navigator_app(pstfile):
     sys.exit(qapp.exec_())
 
 
-def run_message_app(msgfile, nid=None):
-    sys.excepthook = exception_hook
-    qapp = QApplication([])
-    app = AppMessage(path.abspath(msgfile), nid)
-    app.show()
-    sys.exit(qapp.exec_())
-
-
 @click.group(name='qtpst', help='Четене на изпозлваните от MS Outlook файлове')
 @click.option('--config', type=click.Path(exists=True), help='конфигурационен файл')
 def cli(config=None):
@@ -141,8 +137,6 @@ def cli(config=None):
     global_env.setup_env(config_file)
 
 
-# TODO file е винаги задължителен параметър
-
 @cli.command(name='navigator', help='Избор и разглеждане на pst файлове')
 @click.option('--file', type=click.Path(exists=True), help='pst файл за разглеждане')
 def navigator(file):
@@ -151,11 +145,22 @@ def navigator(file):
 
 
 @cli.command(name='message', help='Избор и разглеждане на msg файл')
-@click.option('--file', type=click.Path(exists=True), help='msg файл за разглеждане')
+@click.argument('file', type=click.Path(exists=True))
 @click.option('--nid', type=int, help='nid от pst файл')
 def message(file, nid=None):
     mbox_wrapper.init_mbox_wrapper(global_env.config)
-    run_message_app(file, nid)
+    sys.excepthook = exception_hook
+
+    qapp = QApplication([])
+
+    if nid is not None:
+        read_pst(file)
+        app = AppMessageNid(nid)
+    else:
+        app = AppMessageFile(file)
+
+    app.show()
+    sys.exit(qapp.exec_())
 
 
 if __name__ == '__main__':
