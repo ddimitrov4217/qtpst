@@ -34,7 +34,7 @@ def create_widget_nid(nid):
 class TopMessageWidget(QWidget):
     def __init__(self, attrs):
         super().__init__()
-        self.attrs = attrs
+        self.message = attrs
         self.init_ui()
 
     def init_ui(self):
@@ -56,12 +56,12 @@ class TopMessageWidget(QWidget):
     def add_attrs_lists(self, tabs):
         plainTabs = QTabWidget(self)
         plainTabs.setTabPosition(QTabWidget.North)
-        plainTabs.addTab(AttributesList(self.attrs.properties), 'Съобщение')
+        plainTabs.addTab(AttributesList(self.message.properties), 'Съобщение')
 
-        for eno, entry in enumerate(self.attrs.recipients):
+        for eno, entry in enumerate(self.message.recipients):
             tabname = 'Получател %d' % (eno+1)
             plainTabs.addTab(AttributesList(entry.properties), tabname)
-        for eno, entry in enumerate(self.attrs.attachments):
+        for eno, entry in enumerate(self.message.attachments):
             tabname = 'Приложение %d' % (eno+1)
             plainTabs.addTab(AttributesList(entry.properties), tabname)
 
@@ -74,19 +74,18 @@ class TopMessageWidget(QWidget):
         return None
 
     def add_plain_text_body(self, tabs):
-        pc = self.find_attr_by_name('Body')
-        if pc is not None:
-            widget = PlainTextBody(pc.value.get_value())
+        attr = self.message.dict.get('Body', None)
+        if attr is not None:
+            widget = PlainTextBody(attr.value)
             tabs.addTab(widget, 'Текст на съобщението')
 
     def add_html_body(self, tabs):
-        pc = self.find_attr_by_name('Html')
-        ec = self.find_attr_by_name('InternetCodepage')
+        pc = self.message.dict.get('Html', None)
+        ec = self.message.dict.get('InternetCodepage', None)
         if pc is not None and ec is not None:
-            raw_value = pc.value.get_value()
-            code_page = get_internet_code_page(ec.value.get_value())
-            body_html = decode(raw_value.data, code_page, 'replace')
-            widget = HtmlBody(body_html, self.attrs.attachments)
+            code_page = get_internet_code_page(ec.value)
+            body_html = decode(pc.value.data, code_page, 'replace')
+            widget = HtmlBody(body_html, self.message.attachments)
             tabs.addTab(widget, 'Съобщението като HTML')
 
 
