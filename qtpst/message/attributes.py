@@ -7,8 +7,6 @@ import re
 from PyQt5.QtWidgets import QTreeView
 from PyQt5.QtCore import Qt, QItemSelectionModel
 
-from readms.readpst import PropertyValue
-
 from .. import AbstractFlatItemModel
 
 log = logging.getLogger(__name__)
@@ -39,8 +37,7 @@ class AttributesListModel(AbstractFlatItemModel):
         self.attrs_names = ('Код', 'Тип', 'Размер', 'Стойност',)
 
         def sort_props_key(x):
-            code = x.prop['propCode']
-            return code if not code.startswith('0x') else 'zzz-%s' % code
+            return x.code if not x.code.startswith('0x') else 'zzz-%s' % x.code
 
         self.props = sorted(props, key=sort_props_key)
         self.props_display = {}
@@ -61,20 +58,13 @@ class AttributesListModel(AbstractFlatItemModel):
             return None
 
         if index.row() not in self.props_display:
-            pc = self.props[index.row()]
-            value_type, _, _ = pc.value.pt_desc
-            value_size = len(pc.value._buf)
-            value = pc.value.get_value()
-
-            if value_type == 'Binary':
-                value = PropertyValue.BinaryValue(value.data)
-
-            value = str(value)
+            attv = self.props[index.row()]
+            value = str(attv.value)
             value = re.sub('[\r\n]', ' ', value)
             value = value[:64]
 
-            value_size = '{0:,d}'.format(value_size)
-            self.props_display[index.row()] = pc.prop['propCode'], value_type, value_size, value
+            vsize = '{0:,d}'.format(attv.vsize)
+            self.props_display[index.row()] = attv.code, attv.vtype, vsize, value
 
         if role == Qt.DisplayRole:
             value = self.props_display[index.row()]

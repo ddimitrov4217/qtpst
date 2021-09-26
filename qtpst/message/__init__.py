@@ -7,47 +7,27 @@ import logging
 
 from PyQt5.QtWidgets import QWidget, QTabWidget, QVBoxLayout, QMainWindow, QStyle
 
-from readms.readmsg import PropertiesStream, Message
 from readms.metapst import get_internet_code_page
 
 from . attributes import AttributesList
 from . body import PlainTextBody, HtmlBody
-from . model import read_nid
+from . model import MessageNid, MessageMsg
 from .. import app_css
 
 log = logging.getLogger(__name__)
 
 
-def dump_attrs(attrs):
-    def dump_entry(entry, level=0):
-        name = '%s%s' % ('  '*level, entry.__class__.__name__)
-        log.debug('%-19s%4d %s', name, len(entry.properties), entry.name)
-
-        if entry.__class__.__name__ == 'Message':
-            for re_ in entry.recipients:
-                dump_entry(re_, level+1)
-            for re_ in entry.attachments:
-                dump_entry(re_, level+1)
-
-        if entry.__class__.__name__ == 'Attachment':
-            if entry.message is not None:
-                dump_entry(entry.message, level+1)
-
-    dump_entry(attrs)
-
-
 def create_widget_msg(msgfile):
     log.info(msgfile)
-    with PropertiesStream(msgfile) as ole:
-        attrs = Message(ole, ole.root)
-        dump_attrs(attrs)
+    attrs = MessageMsg(msgfile)
+    attrs.dump_hier()
     return TopMessageWidget(attrs)
 
 
 def create_widget_nid(nid):
     log.info(nid)
-    attrs = read_nid(nid)
-    dump_attrs(attrs)
+    attrs = MessageNid(nid)
+    attrs.dump_hier()
     return TopMessageWidget(attrs)
 
 
