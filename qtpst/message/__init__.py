@@ -5,7 +5,7 @@ from codecs import decode
 
 import logging
 
-from PyQt5.QtWidgets import QWidget, QTabWidget, QVBoxLayout, QMainWindow, QStyle
+from PyQt5.QtWidgets import QApplication, QWidget, QTabWidget, QVBoxLayout, QMainWindow, QStyle
 
 from readms.metapst import get_internet_code_page
 
@@ -94,7 +94,9 @@ class AppMessage(QMainWindow):
         icon = self.style().standardIcon(QStyle.SP_TitleBarMenuButton)
         self.setWindowIcon(icon)
         self.setCentralWidget(self.message_panel)
-        self.resize(700, 500)
+        qapp = QApplication.instance()
+        geometry = qapp.primaryScreen().availableGeometry()
+        self.resize(geometry.width()*0.5, geometry.height()*0.7)
         self.setStyleSheet(app_css())
 
 
