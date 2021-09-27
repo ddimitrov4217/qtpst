@@ -1,19 +1,19 @@
 # -*- coding: UTF-8 -*-
 # vim:ft=python:et:ts=4:sw=4:ai
 
+from os import startfile
 import logging
 
 from PyQt5.QtWidgets import QTreeView, QWidget, QToolBar, QVBoxLayout, QAction
 from PyQt5.QtWidgets import QMessageBox, QFileDialog
 from PyQt5.QtCore import Qt, QItemSelectionModel, pyqtSignal
 
-from .. import AbstractFlatItemModel
+from .. import AbstractFlatItemModel, temp_file
 
 log = logging.getLogger(__name__)
 
 # TODO Запис на приложения файл
 # TODO Запис на всички приложени файлове като zip
-# TODO Отваряне на приложения файл с подходящата програма
 # TODO Икони според типовете на файловете (поне да се различава файл от приложено съобщение)
 # TODO Различаване на plain и S/MIME; може би не трябва да се извежда като файл
 
@@ -85,9 +85,10 @@ class AttachmentsListWidget(QWidget):
         selected = self.get_selected()
         if selected is not None:
             log.debug(selected)
-            # TODO Запис във временната директори
-            # TODO Отваряне с rundll като за Ms-Windows
-            pass
+            content = selected.dict.get('AttachDataObject')
+            refname = self.list.model().att_filename(selected)
+            refname = temp_file.write_temp(content.value.data, refname)
+            startfile(refname)
 
     def hande_enter(self, key):
         if key in (Qt.Key_Return, Qt.Key_Enter):
@@ -123,7 +124,7 @@ class AttachmentsList(QTreeView):
 
     def init_ui(self):
         self.setColumnHidden(0, True)
-        for col, width in enumerate((0, 500, 80, 90, 20)):
+        for col, width in enumerate((0, 400, 80, 90, 20)):
             self.setColumnWidth(col, width)
 
         self.setObjectName('attachmentList')
