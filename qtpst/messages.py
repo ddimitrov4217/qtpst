@@ -6,6 +6,7 @@ import logging
 
 from PyQt5.QtWidgets import QTreeView, QAbstractItemView
 from PyQt5.QtCore import Qt, QItemSelectionModel, pyqtSignal
+from PyQt5.QtGui import QColor
 
 from . import mbox_wrapper, AbstractFlatItemModel
 from . message import AppMessageNid
@@ -125,5 +126,12 @@ class MessagesListModel(AbstractFlatItemModel):
 
         if role == Qt.TextAlignmentRole:
             return self.message_attr_decor[index.column()-1][1]
+
+        # TODO червени за например големите
+        # TODO със Qt.BackgroundRole за тези които имат тагове
+        # TODO Цветни маркери по добавените в съобщението
+        #      https://stackoverflow.com/questions/53059449/
+        if role == Qt.ForegroundRole:
+            return QColor(0, 0, 0)
 
         return None
