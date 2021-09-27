@@ -12,7 +12,7 @@ from readms.metapst import get_internet_code_page
 from . attributes import AttributesList
 from . body import PlainTextBody, HtmlBody
 from . model import MessageNid, MessageMsg
-from . attachments import AttachmentsList
+from . attachments import AttachmentsListWidget
 
 from .. import app_css
 
@@ -100,7 +100,7 @@ class TopMessageWidget(QWidget):
                     has_not_inline = True
                     break
             if has_not_inline:
-                widget = AttachmentsList(self.message.attachments)
+                widget = AttachmentsListWidget(self.message.attachments)
                 tabs.addTab(widget, 'Приложени файлове')
 
 
