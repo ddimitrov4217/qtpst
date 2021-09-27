@@ -3,7 +3,8 @@
 
 import logging
 
-from PyQt5.QtWidgets import QTreeView, QWidget, QToolBar, QVBoxLayout, QAction, QMessageBox
+from PyQt5.QtWidgets import QTreeView, QWidget, QToolBar, QVBoxLayout, QAction
+from PyQt5.QtWidgets import QMessageBox, QFileDialog
 from PyQt5.QtCore import Qt, QItemSelectionModel, pyqtSignal
 
 from .. import AbstractFlatItemModel
@@ -24,6 +25,7 @@ class AttachmentsListWidget(QWidget):
         super().__init__()
         self.list = AttachmentsList(attachments)
         self.init_ui()
+        self.file_dialog = None
 
     def init_ui(self):
         layout = QVBoxLayout()
@@ -57,7 +59,7 @@ class AttachmentsListWidget(QWidget):
     def get_selected(self):
         selected = self.list.selectedIndexes()
         if selected is not None and len(selected) > 0:
-            return self.list.model().display_values[selected[0].row()]
+            return self.list.model().attachments[selected[0].row()]
         QMessageBox.warning(
             self, 'Грешка', 'Моля изберете файл от списъка с приложени файлове',
             buttons=QMessageBox.Ok, defaultButton=QMessageBox.Ok)
@@ -66,22 +68,23 @@ class AttachmentsListWidget(QWidget):
     def save_attachment(self):
         selected = self.get_selected()
         if selected is not None:
-            file_name = selected[0]
-            log.debug(file_name)
-            # TODO Избор на папка с отваряне на диалог
-            # TODO Запис на файла
+            file_name = self.save_file_dialog(self.list.model().att_filename(selected))
+            if file_name is not None:
+                log.debug(file_name)
+                log.debug(selected)
+                # TODO Запис на файла
 
     def save_all_attachments(self):
         log.debug('... all')
-        # TODO Избор на папка
-        # TODO Генериране на име на файла
+        # TODO Генериране на име на файла; нещо като идентификатор на имейла?
+        # TODO Избор на папка с предложение на генерираното име
         # TODO Пакетиране на всички файлове в zip
         # TODO Запис на файла
 
     def open_attachment(self):
         selected = self.get_selected()
         if selected is not None:
-            log.debug(selected[0])
+            log.debug(selected)
             # TODO Запис във временната директори
             # TODO Отваряне с rundll като за Ms-Windows
             pass
@@ -89,6 +92,23 @@ class AttachmentsListWidget(QWidget):
     def hande_enter(self, key):
         if key in (Qt.Key_Return, Qt.Key_Enter):
             self.open_attachment()
+
+    def save_file_dialog(self, default_file_name=None):
+        if self.file_dialog is None:
+            self.file_dialog = QFileDialog(self)
+            self.file_dialog.setOptions(QFileDialog.Options() | QFileDialog.DontUseNativeDialog)
+            self.file_dialog.setWindowTitle('Запис на файл')
+            self.file_dialog.setAcceptMode(QFileDialog.AcceptSave)
+            self.file_dialog.setFileMode(QFileDialog.AnyFile)
+            self.file_dialog.setViewMode(QFileDialog.Detail)
+
+        if default_file_name is not None:
+            self.file_dialog.selectFile(default_file_name)
+
+        if self.file_dialog.exec():
+            file_names = self.file_dialog.selectedFiles()
+            return file_names[0]
+        return None
 
     def keyPressEvent(self, event):
         super().keyPressEvent(event)
@@ -145,7 +165,7 @@ class AttachmentsListModel(AbstractFlatItemModel):
 
         if index.row() not in self.display_values:
             attv = self.attachments[index.row()]
-            file_name = self.att_value(attv, 'DisplayName', 'AttachLongFilename', 'AttachFilename')
+            file_name = self.att_filename(attv)
             mime_tag = self.att_value(attv, 'AttachMimeTag')
             att_object = attv.dict.get('AttachDataObject')
             self.display_values[index.row()] = file_name, '{0:,d}'.format(att_object.vsize), mime_tag
@@ -164,3 +184,6 @@ class AttachmentsListModel(AbstractFlatItemModel):
             if result_att is not None and result_att.value is not None:
                 return result_att.value
         return '--липсва--'
+
+    def att_filename(self, attv):
+        return self.att_value(attv, 'DisplayName', 'AttachLongFilename', 'AttachFilename')
