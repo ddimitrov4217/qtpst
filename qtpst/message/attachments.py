@@ -1,7 +1,7 @@
 # -*- coding: UTF-8 -*-
 # vim:ft=python:et:ts=4:sw=4:ai
 
-from os import startfile
+from os import startfile, path
 from zipfile import ZipFile
 import logging
 
@@ -13,7 +13,6 @@ from .. import AbstractFlatItemModel, temp_file
 
 log = logging.getLogger(__name__)
 
-# TODO Запис на приложения файл
 # TODO Икони според типовете на файловете (поне да се различава файл от приложено съобщение)
 # TODO Различаване на plain и S/MIME; може би не трябва да се извежда като файл
 
@@ -70,9 +69,13 @@ class AttachmentsListWidget(QWidget):
         if selected is not None:
             file_name = self.save_file_dialog(self.list.model().att_filename(selected))
             if file_name is not None:
-                log.debug(file_name)
-                log.debug(selected)
-                # TODO Запис на файла
+                with open(file_name, 'wb') as fout:
+                    content = selected.dict.get('AttachDataObject')
+                    fout.write(content.value.data)
+                QMessageBox.information(
+                    self, 'Информация',
+                    'Файла [%s] е записан успешно.' % path.basename(file_name),
+                    buttons=QMessageBox.Ok, defaultButton=QMessageBox.Ok)
 
     def save_all_attachments(self):
         file_name = self.save_file_dialog('attachments.zip')
@@ -82,6 +85,10 @@ class AttachmentsListWidget(QWidget):
                     name = self.list.model().att_filename(att)
                     content = att.dict.get('AttachDataObject')
                     zout.writestr(name, content.value.data)
+            QMessageBox.information(
+                self, 'Информация',
+                'Архива [%s] е записан успешно.' % path.basename(file_name),
+                buttons=QMessageBox.Ok, defaultButton=QMessageBox.Ok)
 
     def open_attachment(self):
         selected = self.get_selected()
