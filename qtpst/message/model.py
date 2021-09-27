@@ -117,22 +117,26 @@ class MessageMsg(Message):
 
     def copy(self, src, dst):
         copy_ole_properties(src.properties, dst.properties)
+        dst.load_dict()
 
         if isinstance(src, OleMessage):
             for rcp_src in src.recipients:
                 rcp_dst = Recipient()
                 self.copy(rcp_src, rcp_dst)
                 dst.recipients.append(rcp_dst)
+                dst.load_dict()
 
             for att_src in src.attachments:
                 att_dst = Attachment()
                 self.copy(att_src, att_dst)
                 dst.attachments.append(att_dst)
+                dst.load_dict()
 
         if isinstance(src, OleAttachment):
             if src.message is not None:
                 dst.message = Message()
                 self.copy(src.message, dst.message)
+                dst.load_dict()
 
 
 def create_att_value(code, pv):
