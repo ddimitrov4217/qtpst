@@ -2,6 +2,7 @@
 # vim:ft=python:et:ts=4:sw=4:ai
 
 from os import startfile
+from zipfile import ZipFile
 import logging
 
 from PyQt5.QtWidgets import QTreeView, QWidget, QToolBar, QVBoxLayout, QAction
@@ -13,7 +14,6 @@ from .. import AbstractFlatItemModel, temp_file
 log = logging.getLogger(__name__)
 
 # TODO Запис на приложения файл
-# TODO Запис на всички приложени файлове като zip
 # TODO Икони според типовете на файловете (поне да се различава файл от приложено съобщение)
 # TODO Различаване на plain и S/MIME; може би не трябва да се извежда като файл
 
@@ -75,11 +75,13 @@ class AttachmentsListWidget(QWidget):
                 # TODO Запис на файла
 
     def save_all_attachments(self):
-        log.debug('... all')
-        # TODO Генериране на име на файла; нещо като идентификатор на имейла?
-        # TODO Избор на папка с предложение на генерираното име
-        # TODO Пакетиране на всички файлове в zip
-        # TODO Запис на файла
+        file_name = self.save_file_dialog('attachments.zip')
+        if file_name is not None:
+            with ZipFile(file_name, 'w') as zout:
+                for att in self.list.model().attachments:
+                    name = self.list.model().att_filename(att)
+                    content = att.dict.get('AttachDataObject')
+                    zout.writestr(name, content.value.data)
 
     def open_attachment(self):
         selected = self.get_selected()
