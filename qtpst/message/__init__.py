@@ -12,6 +12,8 @@ from readms.metapst import get_internet_code_page
 from . attributes import AttributesList
 from . body import PlainTextBody, HtmlBody
 from . model import MessageNid, MessageMsg
+from . attachments import AttachmentsList
+
 from .. import app_css
 
 log = logging.getLogger(__name__)
@@ -41,11 +43,12 @@ class TopMessageWidget(QWidget):
         tabs = QTabWidget(self)
 
         # TODO Добавяне на панел за body (rtf), ако има и може
-        # TODO Добавяне на панел за приложените файлове, ако има
         # TODO Добавяне на панел за приложените съобщения, ако има
+        # TODO Обслужване на S/MIME имейли - съдържание и приложение файлове
 
         self.add_html_body(tabs)
         self.add_plain_text_body(tabs)
+        self.add_attachments(tabs)
         self.add_attrs_lists(tabs)
 
         layout = QVBoxLayout()
@@ -87,6 +90,18 @@ class TopMessageWidget(QWidget):
             body_html = decode(pc.value.data, code_page, 'replace')
             widget = HtmlBody(body_html, self.message.attachments)
             tabs.addTab(widget, 'Съобщението като HTML')
+
+    def add_attachments(self, tabs):
+        if self.message.attachments is not None and len(self.message.attachments) > 0:
+            has_not_inline = False
+            for att in self.message.attachments:
+                hidden = att.dict.get('AttachmentHidden', None)
+                if hidden is None or not hidden.value:
+                    has_not_inline = True
+                    break
+            if has_not_inline:
+                widget = AttachmentsList(self.message.attachments)
+                tabs.addTab(widget, 'Приложени файлове')
 
 
 class AppMessage(QMainWindow):

@@ -82,11 +82,14 @@ class MessageNid(Message):
             return AttributeValue(code=code, vtype='String', vsize=vsize, value=value)
 
         def att_int(code, value):
-            return AttributeValue(code=code, vtype='Integer', vsize=4, value=value)
+            return AttributeValue(code=code, vtype='Integer', vsize=8, value=value)
+
+        def att_boo(code, value):
+            return AttributeValue(code=code, vtype='Boolean', vsize=8, value=value)
 
         for ano, att_ in enumerate(mbox_wrapper.mbox.list_attachments(nid)):
-            _nid, anid, name, size, mimet, _mime, cid = att_
-            _data_mime, data_name, data = mbox_wrapper.mbox.get_attachment(nid, anid)
+            _nid, anid, name, size, _mimet, _mime, cid = att_
+            data_mime, data_name, data = mbox_wrapper.mbox.get_attachment(nid, anid)
 
             att = Attachment()
             self.attachments.append(att)
@@ -96,10 +99,12 @@ class MessageNid(Message):
 
             att.properties.append(att_int('AttachNumber', ano))
             att.properties.append(att_str('AttachFilename', name))
-            att.properties.append(att_str('AttachLongFilename', name))
+            att.properties.append(att_str('AttachLongFilename', data_name))
             att.properties.append(att_str('DisplayName', data_name))
-            att.properties.append(att_str('AttachMimeTag', mimet))
+            att.properties.append(att_str('AttachMimeTag', data_mime))
             att.properties.append(att_str('AttachContentId', cid))
+            if cid is not None and cid.startswith('image'):
+                att.properties.append(att_boo('AttachmentHidden', True))
 
             # TODO AttacheMethod, AttachmenHidden ObjectType
             # TODO да се различават приложените съобщения и да се зареждат
