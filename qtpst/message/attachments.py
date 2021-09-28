@@ -35,19 +35,19 @@ class AttachmentsListWidget(QWidget):
         toolbar.setMovable(False)
 
         btn_open = QAction('Отвори', self)
-        btn_open.setStatusTip('Отваря избрания файл с подходяща програма')
+        btn_open.setToolTip('Отваря избрания файл с подходяща програма')
         btn_open.triggered.connect(self.open_attachment)
         self.key_pressed.connect(self.hande_enter)
         self.list.doubleClicked.connect(self.open_attachment)
         toolbar.addAction(btn_open)
 
         btn_save = QAction('Запиши', self)
-        btn_save.setStatusTip('Записва избрания файл')
+        btn_save.setToolTip('Записва избрания файл')
         btn_save.triggered.connect(self.save_attachment)
         toolbar.addAction(btn_save)
 
         btn_save_all = QAction('Запиши всички', self)
-        btn_save_all.setStatusTip('Записва всички приложени файлове в zip')
+        btn_save_all.setToolTip('Записва всички приложени файлове в zip')
         btn_save_all.triggered.connect(self.save_all_attachments)
         toolbar.addAction(btn_save_all)
 
