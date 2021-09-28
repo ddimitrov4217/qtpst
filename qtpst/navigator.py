@@ -4,8 +4,8 @@
 import logging
 from collections import namedtuple
 
-from PyQt5.QtWidgets import QTreeWidget, QTreeWidgetItem, QStyle, QAbstractItemView
-from PyQt5.QtCore import Qt, QItemSelectionModel
+from PyQt5.QtWidgets import QTreeWidget, QTreeWidgetItem, QStyle
+from PyQt5.QtCore import Qt
 
 from readms.readpst import PropertyContext
 from . import mbox_wrapper
@@ -56,6 +56,9 @@ class MboxNavigator(QTreeWidget):
             item.setIcon(0, icon)
             self.data[id(item)] = node
 
+            if select_nid is not None and node.nid['nid'] == select_nid:
+                selected.append(item)
+
             if parent is not None:
                 parent.addChild(item)
             else:
@@ -63,23 +66,19 @@ class MboxNavigator(QTreeWidget):
             for node_ in node.children:
                 add_node(node_, item)
 
-        top_node = None
+        log.debug(select_nid)
+        selected = []
+
         for node_ in get_pst_folder_hierarchy():
             add_node(node_)
-            if top_node is None:
-                top_node = node_
 
         self.clear()
         self.insertTopLevelItems(0, items)
         self.expandAll()
 
-        ix = self.model().createIndex(0, 0)
-        self.selectionModel().select(ix, QItemSelectionModel.Select | QItemSelectionModel.Rows)
-        self.scrollTo(ix, QAbstractItemView.EnsureVisible)
-        self.setFocus()
-
-        if top_node is not None:
-            self.refresh_messages(top_node.nid['nid'])
+        selected_item = selected[0] if selected else items[0]
+        selected_item.setSelected(True)
+        self.refresh_messages(self.data.get(id(selected_item)).nid['nid'])
 
     def set_propagation_nid(self, func):
         self.propagate_nid = func
