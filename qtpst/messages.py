@@ -4,7 +4,7 @@
 import re
 import logging
 
-from PyQt5.QtWidgets import QTreeView, QAbstractItemView
+from PyQt5.QtWidgets import QTreeView, QAbstractItemView, QStyledItemDelegate
 from PyQt5.QtCore import Qt, QItemSelectionModel, pyqtSignal
 from PyQt5.QtGui import QColor
 
@@ -25,13 +25,14 @@ class MessagesList(QTreeView):
     def initUI(self):
         self.setModel(MessagesListModel())
         self.setColumnHidden(0, True)
-        for col, width in enumerate((50, 120, 70, 100, 300)):
+        for col, width in enumerate((50, 120, 70, 50, 100, 300)):
             self.setColumnWidth(col, width)
 
         self.setObjectName('messages')
         self.setAlternatingRowColors(True)
         self.doubleClicked.connect(self.handle_open)
         self.key_pressed.connect(self.hande_enter)
+        self.setItemDelegateForColumn(3, CategoryDelegate(self))
 
     def set_nid(self, nid):
         self.model().set_nid(nid)
@@ -64,11 +65,12 @@ class MessagesListModel(AbstractFlatItemModel):
         self.nid = nid
         self.rows = 0
         self.message_attr = (
-            'MessageDeliveryTime', 'MessageSizeExtended',
+            'MessageDeliveryTime', 'MessageSizeExtended', 'Keywords',
             'SenderName', 'ConversationTopic')
         self.message_attr_decor = (
             ('{0:%d.%m.%Y %H:%M:%S}', Qt.AlignLeft),
             ('{0:,d}', Qt.AlignRight),
+            (None, Qt.AlignLeft),
             ('{0:s}', Qt.AlignLeft),
             ('{0:s}', Qt.AlignLeft))
         self.model_data = {}
@@ -109,17 +111,17 @@ class MessagesListModel(AbstractFlatItemModel):
         if not index.isValid() or index.column() == 0:
             return None
 
-        if role == Qt.DisplayRole:
-            entry = self.model_data.get(index.row(), None)
-            if entry is None:
-                page_fault = index.row()//self.page_size
-                self.load_page(page_fault)
-                entry = self.model_data[index.row()]
+        entry = self.model_data.get(index.row(), None)
+        if entry is None:
+            page_fault = index.row()//self.page_size
+            self.load_page(page_fault)
+            entry = self.model_data[index.row()]
 
+        if role == Qt.DisplayRole:
             value = entry[index.column()]
             fmt = self.message_attr_decor[index.column()-1][0]
             if value is not None:
-                value = fmt.format(value)
+                value = fmt.format(value) if fmt is not None else str(value)
                 return re.sub("[\r\n]", " ", value)
             else:
                 return None
@@ -129,9 +131,42 @@ class MessagesListModel(AbstractFlatItemModel):
 
         # TODO червени за например големите
         # TODO със Qt.BackgroundRole за тези които имат тагове
-        # TODO Цветни маркери по добавените в съобщението
-        #      https://stackoverflow.com/questions/53059449/
         if role == Qt.ForegroundRole:
             return QColor(0, 0, 0)
 
+        if role == Qt.EditRole:
+            return entry[index.column()]
+
+        return None
+
+
+class CategoryDelegate(QStyledItemDelegate):
+    # TODO Цветни маркери по добавените в съобщението
+    #      https://stackoverflow.com/questions/53059449/
+    COLOR_MAP = {
+        'виолетова': QColor(255, 128, 255),
+        'жълта': QColor(255, 255, 128),
+        'зелена': QColor(128, 255, 128),
+        'оранжева': QColor(255, 192, 128),
+        'синя': QColor(128, 128, 255),
+        'червена': QColor(255, 96, 96),
+    }
+
+    def __init__(self, owner):
+        super().__init__(owner)
+
+    def paint(self, painter, option, index):
+        value = index.data(Qt.EditRole)
+        if value is not None and isinstance(value, list) and len(value) > 0:
+            for col_desc in value:
+                color = self.get_color(col_desc)
+                if color is not None:
+                    # TODO рисуване на квадратче с указания цвят
+                    log.debug(color)
+        super().paint(painter, option, index)  # XXX Отпада след като стане готово
+
+    def get_color(self, desc):
+        for name_, value_ in self.COLOR_MAP.items():
+            if desc.lower().startswith(name_):
+                return value_
         return None
