@@ -5,8 +5,8 @@ import re
 import logging
 
 from PyQt5.QtWidgets import QTreeView, QAbstractItemView, QStyledItemDelegate
-from PyQt5.QtCore import Qt, QItemSelectionModel, pyqtSignal
-from PyQt5.QtGui import QColor
+from PyQt5.QtCore import Qt, QItemSelectionModel, pyqtSignal, QPoint, QRect, QModelIndex
+from PyQt5.QtGui import QColor, QPen, QBrush
 
 from . import mbox_wrapper, AbstractFlatItemModel
 from . message import AppMessageNid
@@ -123,8 +123,7 @@ class MessagesListModel(AbstractFlatItemModel):
             if value is not None:
                 value = fmt.format(value) if fmt is not None else str(value)
                 return re.sub("[\r\n]", " ", value)
-            else:
-                return None
+            return None
 
         if role == Qt.TextAlignmentRole:
             return self.message_attr_decor[index.column()-1][1]
@@ -141,8 +140,7 @@ class MessagesListModel(AbstractFlatItemModel):
 
 
 class CategoryDelegate(QStyledItemDelegate):
-    # TODO Цветни маркери по добавените в съобщението
-    #      https://stackoverflow.com/questions/53059449/
+    # https://stackoverflow.com/questions/53059449/
     COLOR_MAP = {
         'виолетова': QColor(255, 128, 255),
         'жълта': QColor(255, 255, 128),
@@ -151,19 +149,38 @@ class CategoryDelegate(QStyledItemDelegate):
         'синя': QColor(128, 128, 255),
         'червена': QColor(255, 96, 96),
     }
-
-    def __init__(self, owner):
-        super().__init__(owner)
+    MARKER_WIDTH = 7
+    MARKER_GAP = 2
 
     def paint(self, painter, option, index):
         value = index.data(Qt.EditRole)
+        super().paint(painter, option, QModelIndex())
         if value is not None and isinstance(value, list) and len(value) > 0:
+            rect = option.rect
+            rect.translate(QPoint(self.MARKER_GAP + 1, 0))
             for col_desc in value:
                 color = self.get_color(col_desc)
                 if color is not None:
-                    # TODO рисуване на квадратче с указания цвят
-                    log.debug(color)
-        super().paint(painter, option, index)  # XXX Отпада след като стане готово
+                    self.draw_mark(painter, color, rect)
+                    rect.translate(QPoint(self.MARKER_WIDTH + self.MARKER_GAP + 1, 0))
+
+    def draw_mark(self, painter, color, rect):
+        painter.save()
+        pen = QPen()
+        pen.setWidth(3)
+        pen.setColor(QColor(0, 0, 0))
+
+        brush = QBrush()
+        brush.setColor(color)
+        brush.setStyle(Qt.SolidPattern)
+        painter.setBrush(brush)
+
+        top = rect.topLeft()
+        painter.drawRects(QRect(
+            top + QPoint(0, self.MARKER_GAP),
+            top + QPoint(self.MARKER_WIDTH, rect.height()-self.MARKER_GAP-5)))
+
+        painter.restore()
 
     def get_color(self, desc):
         for name_, value_ in self.COLOR_MAP.items():
