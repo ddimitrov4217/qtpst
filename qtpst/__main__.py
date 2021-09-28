@@ -38,10 +38,20 @@ class AppNavigator(QMainWindow):
         self.addToolBar(toolbar)
 
         self.pstDialog = PstFilesDialog(self)
-        btnOpen = QAction('Open', self)
-        btnOpen.setStatusTip('Избор и отваряне на pst файл')
-        btnOpen.triggered.connect(self.open_pst_file)
-        toolbar.addAction(btnOpen)
+        btn_open = QAction('Open', self)
+        btn_open.setToolTip('Избор и отваряне на pst файл')
+        btn_open.triggered.connect(self.open_pst_file)
+        toolbar.addAction(btn_open)
+
+        btn_colored = QAction('Оцветени', self)
+        btn_colored.setToolTip('Извежда само имейлите отбелязани с цветна категория')
+        btn_colored.triggered.connect(self.filter_only_colored)
+        toolbar.addAction(btn_colored)
+
+        btn_clear = QAction('Изчисти филтрите', self)
+        btn_clear.setToolTip('Изчиства всички приложени филтри')
+        btn_clear.triggered.connect(self.filter_clear)
+        toolbar.addAction(btn_clear)
 
         self.navigator = MboxNavigator()
         self.messages = MessagesList()
@@ -67,6 +77,16 @@ class AppNavigator(QMainWindow):
         if changed:
             self.set_title()
             self.navigator.load_tree_nodes()
+
+    def filter_only_colored(self):
+        if mbox_wrapper.mbox is not None:
+            found = mbox_wrapper.mbox.search_categories()
+            self.navigator.load_tree_nodes(found['nid'])
+
+    def filter_clear(self):
+        if mbox_wrapper.mbox is not None:
+            found = mbox_wrapper.mbox.set_filter(None)
+            self.navigator.load_tree_nodes(found['nid'])
 
     def closeEvent(self, event):
         self.messages.handle_close()

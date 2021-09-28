@@ -30,7 +30,7 @@ class MboxNavigator(QTreeWidget):
         self.currentItemChanged.connect(self.handle_item_clicked)
         self.setObjectName('navigator')
 
-    def load_tree_nodes(self):
+    def load_tree_nodes(self, select_nid=None):
         items = []
         self.data = dict()
         # https://www.pythonguis.com/faq/built-in-qicons-pyqt/
