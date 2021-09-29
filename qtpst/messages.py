@@ -19,10 +19,10 @@ class MessagesList(QTreeView):
 
     def __init__(self):
         super().__init__()
-        self.initUI()
+        self.init_ui()
         self.opened_messages = []
 
-    def initUI(self):
+    def init_ui(self):
         self.setModel(MessagesListModel())
         self.setColumnHidden(0, True)
         for col, width in enumerate((50, 120, 70, 50, 100, 300)):
@@ -33,6 +33,7 @@ class MessagesList(QTreeView):
         self.doubleClicked.connect(self.handle_open)
         self.key_pressed.connect(self.hande_enter)
         self.setItemDelegateForColumn(3, CategoryDelegate(self))
+        self.setSortingEnabled(True)
 
     def set_nid(self, nid):
         self.model().set_nid(nid)
@@ -75,6 +76,8 @@ class MessagesListModel(AbstractFlatItemModel):
             ('{0:s}', Qt.AlignLeft))
         self.model_data = {}
         self.page_size = 20
+        self.order_by = None
+        self.order_reverse = True
 
     def set_nid(self, nid):
         self.nid = nid
@@ -89,7 +92,9 @@ class MessagesListModel(AbstractFlatItemModel):
         for entry, message in enumerate(mbox_wrapper.mbox.list_messages(
                 self.nid, self.message_attr,
                 skip=page*self.page_size,
-                page=self.page_size)):
+                page=self.page_size,
+                order_by=self.order_by,
+                order_reverse=self.order_reverse)):
             self.model_data[page*self.page_size+entry] = message
 
     def row_count(self):
@@ -137,6 +142,13 @@ class MessagesListModel(AbstractFlatItemModel):
             return entry[index.column()]
 
         return None
+
+    def sort(self, column, order):
+        if self.nid is not None:
+            self.order_by = self.message_attr[column-1]
+            self.order_reverse = order == Qt.AscendingOrder
+            log.debug('%s, %s', self.order_by, self.order_reverse)
+            self.set_nid(self.nid)
 
 
 class CategoryDelegate(QStyledItemDelegate):
