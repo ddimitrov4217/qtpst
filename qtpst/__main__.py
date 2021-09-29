@@ -76,6 +76,7 @@ class AppNavigator(QMainWindow):
         changed = self.pstDialog.choose_file()
         if changed:
             self.set_title()
+            self.navigator.last_selected_nid = None
             self.navigator.load_tree_nodes()
 
     def filter_only_colored(self):

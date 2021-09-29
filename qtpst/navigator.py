@@ -21,6 +21,7 @@ class MboxNavigator(QTreeWidget):
         self.initUI()
         self.propagate_nid = None
         self.data = None
+        self.last_selected_nid = None
 
     def initUI(self):
         self.setColumnCount(4)
@@ -57,7 +58,10 @@ class MboxNavigator(QTreeWidget):
             self.data[id(item)] = node
 
             if select_nid is not None and node.nid['nid'] == select_nid:
-                selected.append(item)
+                selected['filter_found'] = item
+
+            if self.last_selected_nid is not None and node.nid['nid'] == self.last_selected_nid:
+                selected['last_selected'] = item
 
             if parent is not None:
                 parent.addChild(item)
@@ -67,7 +71,7 @@ class MboxNavigator(QTreeWidget):
                 add_node(node_, item)
 
         log.debug(select_nid)
-        selected = []
+        selected = {}
 
         for node_ in get_pst_folder_hierarchy():
             add_node(node_)
@@ -76,7 +80,14 @@ class MboxNavigator(QTreeWidget):
         self.insertTopLevelItems(0, items)
         self.expandAll()
 
-        selected_item = selected[0] if selected else items[0] if items else None
+        selected_item = None
+        for select_priority in ('last_selected', 'filter_found'):
+            if select_priority in selected:
+                selected_item = selected[select_priority]
+                break
+        if selected_item is None and items:
+            selected_item = items[0]
+
         if selected_item is not None:
             selected_item.setSelected(True)
             self.refresh_messages(self.data.get(id(selected_item)).nid['nid'])
@@ -88,6 +99,7 @@ class MboxNavigator(QTreeWidget):
         node = self.data.get(id(current), None)
         if node is not None:
             log.debug('%d: %s', node.nid['nid'], node.name)
+            self.last_selected_nid = node.nid['nid']
             self.refresh_messages(node.nid['nid'])
 
     def refresh_messages(self, nid):
