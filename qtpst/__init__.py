@@ -4,6 +4,7 @@
 from abc import abstractmethod
 from os import path
 from PyQt5.QtCore import QAbstractItemModel, QModelIndex
+from PyQt5.QtCore import Qt
 from wxpst.model import mbox_wrapper, global_env, temp_file
 
 
@@ -25,9 +26,17 @@ class AbstractFlatItemModel(QAbstractItemModel):
             return 0  # няма деца
         return self.row_count()
 
+    def columnCount(self, _parent):
+        return len(self.attrs_names) + 1
+
+    def headerData(self, section, _orientation, role):
+        if role == Qt.DisplayRole:
+            return list(self.attrs_names)[section-1]
+        return None
+
     @abstractmethod
     def row_count(self):
-        pass
+        raise NotImplementedError
 
 
 def app_css():

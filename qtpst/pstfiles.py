@@ -81,8 +81,8 @@ class PstFilesDialog(QDialog):
 class PstFilesListModel(AbstractFlatItemModel):
     def __init__(self):
         super().__init__()
-        self.message_attr = ('Име на файла', 'Размер [MB]', 'От дата')
-        self.message_attr_decor = (
+        self.attrs_names = ('Име на файла', 'Размер [MB]', 'От дата')
+        self.attrs_decor = (
             ('{0:s}', Qt.AlignLeft),
             ('{0:,.3f}', Qt.AlignRight),
             ('{0:%d.%m.%Y}', Qt.AlignLeft))
@@ -112,14 +112,6 @@ class PstFilesListModel(AbstractFlatItemModel):
     def row_count(self):
         return len(self.model_data) if self.model_data is not None else 0
 
-    def columnCount(self, _parent):
-        return len(self.message_attr) + 1
-
-    def headerData(self, section, _orientation, role):
-        if role == Qt.DisplayRole:
-            return list(self.message_attr)[section-1]
-        return None
-
     def data(self, index, role):
         if not index.isValid() or index.column() == 0:
             return None
@@ -128,10 +120,10 @@ class PstFilesListModel(AbstractFlatItemModel):
         value = entry[index.column()]
 
         if role == Qt.DisplayRole:
-            fmt = self.message_attr_decor[index.column()-1][0]
+            fmt = self.attrs_decor[index.column()-1][0]
             return fmt.format(value) if value is not None else None
 
         if role == Qt.TextAlignmentRole:
-            return self.message_attr_decor[index.column()-1][1]
+            return self.attrs_decor[index.column()-1][1]
 
         return None

@@ -161,14 +161,6 @@ class AttachmentsListModel(AbstractFlatItemModel):
     def row_count(self):
         return len(self.attachments)
 
-    def columnCount(self, _parent):
-        return len(self.attrs_names) + 1
-
-    def headerData(self, section, _orientation, role):
-        if role == Qt.DisplayRole:
-            return list(self.attrs_names)[section-1]
-        return None
-
     def data(self, index, role):
         if not index.isValid() or index.column() == 0:
             return None
