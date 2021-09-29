@@ -12,6 +12,9 @@ from .. import AbstractFlatItemModel
 
 log = logging.getLogger(__name__)
 
+# TODO Запис на Binary атрибут във файл
+# TODO Отделен диалог за дългите стойности, включително Binary
+
 
 class AttributesList(QTreeView):
     def __init__(self, props):

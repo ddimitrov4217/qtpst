@@ -13,6 +13,8 @@ from . message import AppMessageNid
 
 log = logging.getLogger(__name__)
 
+# TODO Колонка с индикатор за приложен файл
+
 
 class MessagesList(QTreeView):
     key_pressed = pyqtSignal(int)

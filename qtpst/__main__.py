@@ -18,6 +18,8 @@ from . message import AppMessageFile, AppMessageNid
 
 log = logging.getLogger(__name__)
 
+# TODO Кутийка за търсене по ключови думи
+
 
 class AppNavigator(QMainWindow):
     def __init__(self):

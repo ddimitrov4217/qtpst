@@ -13,6 +13,8 @@ from . import mbox_wrapper, global_env, AbstractFlatItemModel
 
 log = logging.getLogger(__name__)
 
+# TODO Двойно цъкване да отваря избрания файл
+
 
 def read_pst(pst_file):
     if pst_file is not None and (

@@ -22,6 +22,8 @@ class PlainTextBody(QTextEdit):
 
 
 class HtmlBody(QTextEdit):
+    # TODO Панел с информация за текущото съобщения; нещо като както е за Forward
+
     def __init__(self, text, attachments):
         super().__init__()
         self.attachments = attachments

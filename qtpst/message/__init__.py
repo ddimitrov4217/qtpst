@@ -46,6 +46,9 @@ class TopMessageWidget(QWidget):
         # TODO Добавяне на панел за приложените съобщения, ако има
         # TODO Обслужване на S/MIME имейли - съдържание и приложение файлове
 
+        # TODO Конструирането на body message да става с цялото съобщение
+        # TODO Проверката дали може да се извади дадено body да е като static фунция в съответния клас
+
         self.add_html_body(tabs)
         self.add_plain_text_body(tabs)
         self.add_attachments(tabs)
