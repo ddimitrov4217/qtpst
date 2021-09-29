@@ -76,9 +76,10 @@ class MboxNavigator(QTreeWidget):
         self.insertTopLevelItems(0, items)
         self.expandAll()
 
-        selected_item = selected[0] if selected else items[0]
-        selected_item.setSelected(True)
-        self.refresh_messages(self.data.get(id(selected_item)).nid['nid'])
+        selected_item = selected[0] if selected else items[0] if items else None
+        if selected_item is not None:
+            selected_item.setSelected(True)
+            self.refresh_messages(self.data.get(id(selected_item)).nid['nid'])
 
     def set_propagation_nid(self, func):
         self.propagate_nid = func

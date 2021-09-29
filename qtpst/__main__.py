@@ -81,12 +81,13 @@ class AppNavigator(QMainWindow):
     def filter_only_colored(self):
         if mbox_wrapper.mbox is not None:
             found = mbox_wrapper.mbox.search_categories()
-            self.navigator.load_tree_nodes(found['nid'])
+            found = found['nid'] if found is not None else None
+            self.navigator.load_tree_nodes(found)
 
     def filter_clear(self):
         if mbox_wrapper.mbox is not None:
-            found = mbox_wrapper.mbox.set_filter(None)
-            self.navigator.load_tree_nodes(found['nid'])
+            mbox_wrapper.mbox.set_filter(None)
+            self.navigator.load_tree_nodes()
 
     def closeEvent(self, event):
         self.messages.handle_close()
