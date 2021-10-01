@@ -1,16 +1,12 @@
 # -*- coding: UTF-8 -*-
 # vim:ft=python:et:ts=4:sw=4:ai
 
-from codecs import decode
-
 import logging
 
 from PyQt5.QtWidgets import QApplication, QWidget, QTabWidget, QVBoxLayout, QMainWindow, QStyle
 
-from readms.metapst import get_internet_code_page
-
 from . attributes import AttributesList
-from . body import PlainTextBody, HtmlBody
+from . body import plain_text_widget, html_widget
 from . model import MessageNid, MessageMsg
 from . attachments import AttachmentsListWidget
 
@@ -80,18 +76,13 @@ class TopMessageWidget(QWidget):
         return None
 
     def add_plain_text_body(self, tabs):
-        attr = self.message.dict.get('Body', None)
-        if attr is not None:
-            widget = PlainTextBody(attr.value)
+        widget = plain_text_widget(self.message)
+        if widget is not None:
             tabs.addTab(widget, 'Текст на съобщението')
 
     def add_html_body(self, tabs):
-        pc = self.message.dict.get('Html', None)
-        ec = self.message.dict.get('InternetCodepage', None)
-        if pc is not None and ec is not None:
-            code_page = get_internet_code_page(ec.value)
-            body_html = decode(pc.value.data, code_page, 'replace')
-            widget = HtmlBody(body_html, self.message.attachments)
+        widget = html_widget(self.message)
+        if widget is not None:
             tabs.addTab(widget, 'Съобщението като HTML')
 
     def add_attachments(self, tabs):

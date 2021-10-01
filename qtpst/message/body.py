@@ -1,12 +1,27 @@
 # -*- coding: UTF-8 -*-
 # vim:ft=python:et:ts=4:sw=4:ai
 
+from codecs import decode
 import logging
 
 from PyQt5.QtWidgets import QTextEdit
+from readms.metapst import get_internet_code_page
 from .. import temp_file
 
 log = logging.getLogger(__name__)
+
+
+def plain_text_widget(message):
+    attr = message.dict.get('Body', None)
+    if attr is not None:
+        return PlainTextBody(attr.value)
+    return None
+
+
+def html_widget(message):
+    if HtmlBody.find_html_attr(message) is not None:
+        return HtmlBody(message)
+    return None
 
 
 class PlainTextBody(QTextEdit):
@@ -24,10 +39,20 @@ class PlainTextBody(QTextEdit):
 class HtmlBody(QTextEdit):
     # TODO Панел с информация за текущото съобщения; нещо като както е за Forward
 
-    def __init__(self, text, attachments):
+    @staticmethod
+    def find_html_attr(message):
+        pc = message.dict.get('Html', None)
+        ec = message.dict.get('InternetCodepage', None)
+        if pc is not None and ec is not None:
+            code_page = get_internet_code_page(ec.value)
+            return decode(pc.value.data, code_page, 'replace')
+        return None
+
+    def __init__(self, message):
         super().__init__()
-        self.attachments = attachments
-        self.text = text
+        self.message = message
+        self.attachments = self.message.attachments
+        self.text = self.find_html_attr(message)
         self.setup_ui()
         self.setObjectName('bodyHtml')
 
