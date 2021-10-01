@@ -98,7 +98,7 @@ class AppMessage(QMainWindow):
         self.setCentralWidget(self.message_panel)
         qapp = QApplication.instance()
         geometry = qapp.primaryScreen().availableGeometry()
-        self.resize(geometry.width()*0.5, geometry.height()*0.7)
+        self.resize(geometry.width()*0.55, geometry.height()*0.8)
         self.setStyleSheet(app_css())
 
 

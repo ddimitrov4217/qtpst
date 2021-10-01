@@ -20,3 +20,8 @@ QTextEdit#bodyHtml {
 	font-size: 11pt;
 	font-family: Calibri, Arial, Helvetica;
 }
+
+QTextEdit#bodyHtmlHeading {
+	font-size: 11pt;
+	font-family: Calibri, Arial, Helvetica;
+}
