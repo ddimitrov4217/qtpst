@@ -46,12 +46,12 @@ class TopMessageWidget(QWidget):
         layout = QVBoxLayout()
         layout.addWidget(tabs)
         self.setLayout(layout)
-        self.show()
 
     def add_attrs_lists(self, tabs):
         plainTabs = QTabWidget(self)
         plainTabs.setTabPosition(QTabWidget.North)
         plainTabs.addTab(AttributesList(self.message.properties), 'Съобщение')
+        tabs.addTab(plainTabs, 'Всички атрибути')
 
         for eno, entry in enumerate(self.message.recipients):
             tabname = 'Получател %d' % (eno+1)
@@ -59,8 +59,6 @@ class TopMessageWidget(QWidget):
         for eno, entry in enumerate(self.message.attachments):
             tabname = 'Приложение %d' % (eno+1)
             plainTabs.addTab(AttributesList(entry.properties), tabname)
-
-        tabs.addTab(plainTabs, 'Всички атрибути')
 
     def find_attr_by_name(self, name):
         for pc in self.attrs.properties:
