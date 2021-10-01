@@ -13,6 +13,9 @@ log = logging.getLogger(__name__)
 
 AttributeValue = namedtuple('AttributeValue', ['code', 'vtype', 'vsize', 'value'])
 
+# TODO Обслужване на S/MIME имейли - съдържание и приложение файлове
+# TODO Обслужване на вложените съобщения с добавянето им в модела?
+
 
 class AttributesContainer:
     def __init__(self):

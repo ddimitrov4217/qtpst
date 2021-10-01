@@ -77,7 +77,6 @@ class PstFilesDialog(QDialog):
         self.body.clearSelection()
         self.body.setCurrentIndex(found)
         self.body.scrollTo(found, QAbstractItemView.EnsureVisible)
-        self.body.setFocus()
 
 
 class PstFilesListModel(AbstractFlatItemModel):

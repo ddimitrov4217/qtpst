@@ -14,7 +14,8 @@ from .. import AbstractFlatItemModel, temp_file
 log = logging.getLogger(__name__)
 
 # TODO Икони според типовете на файловете (поне да се различава файл от приложено съобщение)
-# TODO Различаване на plain и S/MIME; може би не трябва да се извежда като файл
+# TODO Отваряне на S/MIME като вложено съобщения
+# TODO Отваряне на вложено съобщения
 
 
 class AttachmentsListWidget(QWidget):
