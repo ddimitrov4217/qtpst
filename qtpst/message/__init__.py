@@ -5,7 +5,7 @@ import logging
 
 from PyQt5.QtWidgets import QApplication, QWidget, QTabWidget, QVBoxLayout, QMainWindow, QStyle
 
-from . attributes import AttributesList
+from . attributes import AttributesList, AttributeValueWidget
 from . body import plain_text_widget, html_widget
 from . model import MessageNid, MessageMsg
 from . attachments import AttachmentsListWidget
@@ -49,16 +49,17 @@ class TopMessageWidget(QWidget):
 
     def add_attrs_lists(self, tabs):
         plainTabs = QTabWidget(self)
+        value_dialog = AttributeValueWidget()
         plainTabs.setTabPosition(QTabWidget.North)
-        plainTabs.addTab(AttributesList(self.message.properties), 'Съобщение')
+        plainTabs.addTab(AttributesList(self.message.properties, value_dialog), 'Съобщение')
         tabs.addTab(plainTabs, 'Всички атрибути')
 
         for eno, entry in enumerate(self.message.recipients):
             tabname = 'Получател %d' % (eno+1)
-            plainTabs.addTab(AttributesList(entry.properties), tabname)
+            plainTabs.addTab(AttributesList(entry.properties, value_dialog), tabname)
         for eno, entry in enumerate(self.message.attachments):
             tabname = 'Приложение %d' % (eno+1)
-            plainTabs.addTab(AttributesList(entry.properties), tabname)
+            plainTabs.addTab(AttributesList(entry.properties, value_dialog), tabname)
 
     def find_attr_by_name(self, name):
         for pc in self.attrs.properties:

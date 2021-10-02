@@ -25,3 +25,8 @@ QTextEdit#bodyHtmlHeading {
 	font-size: 11pt;
 	font-family: Calibri, Arial, Helvetica;
 }
+
+QTextEdit#attributeValueText {
+	font-family: Liberation Mono;
+	font-size: 9pt;
+}

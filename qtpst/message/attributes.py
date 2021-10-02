@@ -4,22 +4,24 @@
 import logging
 import re
 
-from PyQt5.QtWidgets import QTreeView
-from PyQt5.QtCore import Qt, QItemSelectionModel
+from PyQt5.QtWidgets import QTreeView, QDialog, QTextEdit, QToolBar, QPushButton
+from PyQt5.QtWidgets import QHBoxLayout, QVBoxLayout
+from PyQt5.QtCore import Qt, QItemSelectionModel, pyqtSignal
 from readms.readpst import PropertyValue
 
 from .. import AbstractFlatItemModel
+from .. import app_css
 
 log = logging.getLogger(__name__)
 
-# TODO Запис на Binary атрибут във файл
-# TODO Отделен диалог за дългите стойности, включително Binary
-
 
 class AttributesList(QTreeView):
-    def __init__(self, props):
+    key_pressed = pyqtSignal(int)
+
+    def __init__(self, props, value_dialog=None):
         super().__init__()
         self.setModel(AttributesListModel(props))
+        self.value_dialog = value_dialog
         self.init_ui()
 
     def init_ui(self):
@@ -29,9 +31,28 @@ class AttributesList(QTreeView):
 
         self.setObjectName('attrsList')
         self.setAlternatingRowColors(True)
+        self.key_pressed.connect(self.hande_enter)
+        self.doubleClicked.connect(self.open_value_dialog)
 
         ix = self.model().createIndex(0, 0)
         self.selectionModel().select(ix, QItemSelectionModel.Select | QItemSelectionModel.Rows)
+
+    def keyPressEvent(self, event):
+        super().keyPressEvent(event)
+        self.key_pressed.emit(event.key())
+
+    def hande_enter(self, key):
+        if key in (Qt.Key_Return, Qt.Key_Enter):
+            self.open_value_dialog()
+
+    def open_value_dialog(self):
+        if self.value_dialog is None:
+            return
+        selected = self.selectedIndexes()
+        attr = self.model().props[selected[0].row()]
+        if attr.vtype == 'String' and attr.vsize >= 102 or attr.vtype == 'Binary':
+            self.value_dialog.set_attribute(attr)
+            self.value_dialog.exec()
 
 
 class AttributesListModel(AbstractFlatItemModel):
@@ -75,3 +96,49 @@ class AttributesListModel(AbstractFlatItemModel):
                 return Qt.AlignRight
 
         return None
+
+
+class AttributeValueWidget(QDialog):
+    def __init__(self):
+        super().__init__()
+        self.attr = None
+        self.setup_ui()
+
+    def setup_ui(self):
+        self.setWindowTitle('Стойност на атрибут')
+        self.resize(600, 300)
+        layout = QVBoxLayout()
+        toolbar = QToolBar()
+        toolbar.setObjectName('attributeValueActions')
+        toolbar.setFloatable(False)
+        toolbar.setMovable(False)
+
+        hbox = QHBoxLayout()
+        hbox.addStretch(1)
+        self.btn_save = QPushButton('Запиши', self)
+        self.btn_save.setToolTip('Записва стойността на атрибута във файл')
+        self.btn_save.clicked.connect(self.save_attribute)
+        hbox.addWidget(self.btn_save)
+
+        btn_close = QPushButton('Затвори', self)
+        btn_close.clicked.connect(self.close)
+        hbox.addWidget(btn_close)
+
+        self.text = QTextEdit()
+        self.text.setObjectName('attributeValueText')
+        self.text.setReadOnly(True)
+        self.text.setLineWrapMode(QTextEdit.WidgetWidth)
+
+        layout.addWidget(self.text)
+        layout.addLayout(hbox)
+        self.setLayout(layout)
+        self.setStyleSheet(app_css())
+
+    def set_attribute(self, attr):
+        self.attr = attr
+        self.text.setPlainText(str(attr.value))
+        self.btn_save.setEnabled(attr.vtype == 'Binary')
+
+    def save_attribute(self):
+        # TODO Запис на Binary атрибут във файл
+        log.debug(self.attr.code)
