@@ -6,6 +6,7 @@ from collections import namedtuple
 from readms.readpst import PropertyValue, PropertyContext
 from readms.readmsg import PropertiesStream
 from readms.readmsg import Message as OleMessage, Attachment as OleAttachment
+from readms.pstmbox import MimeData
 
 from .. import mbox_wrapper
 
@@ -13,7 +14,6 @@ log = logging.getLogger(__name__)
 
 AttributeValue = namedtuple('AttributeValue', ['code', 'vtype', 'vsize', 'value'])
 
-# TODO Обслужване на S/MIME имейли - съдържание и приложение файлове
 # TODO Обслужване на вложените съобщения с добавянето им в модела?
 
 
@@ -55,6 +55,16 @@ class Message(AttributesContainer):
         super().__init__()
         self.attachments = []
         self.recipients = []
+        self.smimes = []
+
+    def append_smime(self, smime):
+        if smime is not None:
+            self.smimes.append(smime)
+
+    def merge_smime(self):
+        # XXX Вероятно е само едно S/MIME; ако са повече, как се merge-ват
+        # TODO Merge със текущото съобщения
+        pass
 
 
 class Recipient(AttributesContainer):
@@ -113,6 +123,7 @@ class MessageNid(Message):
             # TODO да се различават приложените съобщения и да се зареждат
 
             att.load_dict()
+            self.append_smime(find_smime(att))
 
 
 class MessageMsg(Message):
@@ -139,12 +150,23 @@ class MessageMsg(Message):
                 self.copy(att_src, att_dst)
                 dst.attachments.append(att_dst)
                 dst.load_dict()
+                self.append_smime(find_smime(att_dst))
 
         if isinstance(src, OleAttachment):
             if src.message is not None:
                 dst.message = Message()
                 self.copy(src.message, dst.message)
                 dst.load_dict()
+
+
+class MessageSmime(Message):
+    def __init__(self, smime_data):
+        super().__init__()
+        self.data = MimeData(smime_data)
+        log.debug(self.data)
+        log.debug(self.data.parts)
+        # TODO Обслужване на S/MIME имейли - съдържание и приложение файлове
+        # XXX За тестване department.pst nid 2114468 2114436
 
 
 def create_att_value(code, pv):
@@ -160,3 +182,11 @@ def copy_ole_properties(src, dst):
     for atts in src:
         attv = create_att_value(atts.prop['propCode'], atts.value)
         dst.append(attv)
+
+
+def find_smime(attachment):
+    mime = attachment.dict.get('AttachMimeTag', None)
+    if mime is not None and mime.value in ('multipart/signed',):
+        data = attachment.dict.get('AttachDataObject', None)
+        return MessageSmime(str(data.value.data))
+    return None
