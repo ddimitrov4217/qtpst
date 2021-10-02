@@ -13,10 +13,9 @@ log = logging.getLogger(__name__)
 
 def plain_text_widget(message):
     attr = message.dict.get('Body', None)
-    if attr is not None:
-        body = PlainTextBody(attr.value)
-        return BodyWidget(body, message)
-    return None
+    text = attr.value if attr is not None else None
+    body = PlainTextBody(text)
+    return BodyWidget(body, message)
 
 
 def html_widget(message):
