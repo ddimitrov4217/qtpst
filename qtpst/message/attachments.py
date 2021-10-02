@@ -14,7 +14,6 @@ from .. import AbstractFlatItemModel, temp_file
 log = logging.getLogger(__name__)
 
 # TODO Икони според типовете на файловете (поне да се различава файл от приложено съобщение)
-# TODO Отваряне на S/MIME като вложено съобщения
 # TODO Отваряне на вложено съобщения
 
 
@@ -68,7 +67,7 @@ class AttachmentsListWidget(QWidget):
     def save_attachment(self):
         selected = self.get_selected()
         if selected is not None:
-            file_name = self.save_file_dialog(self.list.model().att_filename(selected))
+            file_name = SaveDialog.open_dialog(self.list.model().att_filename(selected))
             if file_name is not None:
                 with open(file_name, 'wb') as fout:
                     content = selected.dict.get('AttachDataObject')
@@ -79,7 +78,7 @@ class AttachmentsListWidget(QWidget):
                     buttons=QMessageBox.Ok, defaultButton=QMessageBox.Ok)
 
     def save_all_attachments(self):
-        file_name = self.save_file_dialog('attachments.zip')
+        file_name = SaveDialog.open_dialog('attachments.zip')
         if file_name is not None:
             with ZipFile(file_name, 'w') as zout:
                 for att in self.list.model().attachments:
@@ -103,23 +102,6 @@ class AttachmentsListWidget(QWidget):
     def hande_enter(self, key):
         if key in (Qt.Key_Return, Qt.Key_Enter):
             self.open_attachment()
-
-    def save_file_dialog(self, default_file_name=None):
-        if self.file_dialog is None:
-            self.file_dialog = QFileDialog(self)
-            self.file_dialog.setOptions(QFileDialog.Options() | QFileDialog.DontUseNativeDialog)
-            self.file_dialog.setWindowTitle('Запис на файл')
-            self.file_dialog.setAcceptMode(QFileDialog.AcceptSave)
-            self.file_dialog.setFileMode(QFileDialog.AnyFile)
-            self.file_dialog.setViewMode(QFileDialog.Detail)
-
-        if default_file_name is not None:
-            self.file_dialog.selectFile(default_file_name)
-
-        if self.file_dialog.exec():
-            file_names = self.file_dialog.selectedFiles()
-            return file_names[0]
-        return None
 
     def keyPressEvent(self, event):
         super().keyPressEvent(event)
@@ -190,3 +172,25 @@ class AttachmentsListModel(AbstractFlatItemModel):
 
     def att_filename(self, attv):
         return self.att_value(attv, 'DisplayName', 'AttachLongFilename', 'AttachFilename')
+
+
+class SaveDialog():
+    dialog = None
+
+    @staticmethod
+    def open_dialog(default_file_name=None):
+        if SaveDialog.dialog is None:
+            SaveDialog.dialog = QFileDialog()
+            SaveDialog.dialog.setOptions(QFileDialog.Options() | QFileDialog.DontUseNativeDialog)
+            SaveDialog.dialog.setWindowTitle('Запис на файл')
+            SaveDialog.dialog.setAcceptMode(QFileDialog.AcceptSave)
+            SaveDialog.dialog.setFileMode(QFileDialog.AnyFile)
+            SaveDialog.dialog.setViewMode(QFileDialog.Detail)
+
+        if default_file_name is not None:
+            SaveDialog.dialog.selectFile(default_file_name)
+
+        if SaveDialog.dialog.exec():
+            file_names = SaveDialog.dialog.selectedFiles()
+            return file_names[0]
+        return None
