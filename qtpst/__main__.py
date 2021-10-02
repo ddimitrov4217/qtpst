@@ -8,7 +8,7 @@ import logging
 import click
 
 from PyQt5.QtWidgets import QApplication, QMainWindow, QToolBar, QMessageBox
-from PyQt5.QtWidgets import QStyle, QAction, QSplitter
+from PyQt5.QtWidgets import QStyle, QAction, QSplitter, QToolButton
 from PyQt5.QtCore import Qt
 
 from . import mbox_wrapper, global_env, app_css, temp_file
@@ -41,20 +41,32 @@ class AppNavigator(QMainWindow):
         self.addToolBar(toolbar)
 
         self.pstDialog = PstFilesDialog(self)
-        btn_open = QAction('Open', self)
-        btn_open.setToolTip('Избор и отваряне на pst файл')
-        btn_open.triggered.connect(self.open_pst_file)
-        toolbar.addAction(btn_open)
+        act_open = QAction('Open', self)
+        act_open.setToolTip('Избор и отваряне на pst файл')
+        act_open.triggered.connect(self.open_pst_file)
+        btn_open = QToolButton()
+        btn_open.setDefaultAction(act_open)
+        btn_open.setIcon(self.style().standardIcon(QStyle.SP_DialogOpenButton))
+        btn_open.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
+        toolbar.addWidget(btn_open)
 
-        btn_colored = QAction('Оцветени', self)
-        btn_colored.setToolTip('Извежда само имейлите отбелязани с цветна категория')
-        btn_colored.triggered.connect(self.filter_only_colored)
-        toolbar.addAction(btn_colored)
+        act_colored = QAction('Оцветени', self)
+        act_colored.setToolTip('Извежда само имейлите отбелязани с цветна категория')
+        act_colored.triggered.connect(self.filter_only_colored)
+        btn_colored = QToolButton()
+        btn_colored.setDefaultAction(act_colored)
+        btn_colored.setIcon(self.style().standardIcon(QStyle.SP_FileDialogInfoView))
+        btn_colored.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
+        toolbar.addWidget(btn_colored)
 
-        btn_clear = QAction('Изчисти филтрите', self)
-        btn_clear.setToolTip('Изчиства всички приложени филтри')
-        btn_clear.triggered.connect(self.filter_clear)
-        toolbar.addAction(btn_clear)
+        act_clear = QAction('Изчисти филтрите', self)
+        act_clear.setToolTip('Изчиства всички приложени филтри')
+        act_clear.triggered.connect(self.filter_clear)
+        btn_clear = QToolButton()
+        btn_clear.setDefaultAction(act_clear)
+        btn_clear.setIcon(self.style().standardIcon(QStyle.SP_LineEditClearButton))
+        btn_clear.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
+        toolbar.addWidget(btn_clear)
 
         self.navigator = MboxNavigator()
         self.messages = MessagesList()

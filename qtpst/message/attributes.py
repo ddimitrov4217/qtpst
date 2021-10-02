@@ -5,7 +5,7 @@ import logging
 import re
 
 from PyQt5.QtWidgets import QTreeView, QDialog, QTextEdit, QToolBar, QPushButton
-from PyQt5.QtWidgets import QHBoxLayout, QVBoxLayout
+from PyQt5.QtWidgets import QHBoxLayout, QVBoxLayout, QStyle
 from PyQt5.QtCore import Qt, QItemSelectionModel, pyqtSignal
 from readms.readpst import PropertyValue
 
@@ -107,6 +107,7 @@ class AttributeValueWidget(QDialog):
 
     def setup_ui(self):
         self.setWindowTitle('Стойност на атрибут')
+        self.setWindowIcon(self.style().standardIcon(QStyle.SP_TitleBarMenuButton))
         self.resize(600, 300)
         layout = QVBoxLayout()
         toolbar = QToolBar()
@@ -118,10 +119,12 @@ class AttributeValueWidget(QDialog):
         hbox.addStretch(1)
         self.btn_save = QPushButton('Запиши', self)
         self.btn_save.setToolTip('Записва стойността на атрибута във файл')
+        self.btn_save.setIcon(self.style().standardIcon(QStyle.SP_DialogSaveButton))
         self.btn_save.clicked.connect(self.save_attribute)
         hbox.addWidget(self.btn_save)
 
         btn_close = QPushButton('Затвори', self)
+        btn_close.setIcon(self.style().standardIcon(QStyle.SP_DialogCloseButton))
         btn_close.clicked.connect(self.close)
         hbox.addWidget(btn_close)
 

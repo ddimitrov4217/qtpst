@@ -6,7 +6,7 @@ from zipfile import ZipFile
 import logging
 
 from PyQt5.QtWidgets import QTreeView, QWidget, QToolBar, QVBoxLayout, QAction
-from PyQt5.QtWidgets import QMessageBox, QFileDialog
+from PyQt5.QtWidgets import QMessageBox, QFileDialog, QToolButton, QStyle
 from PyQt5.QtCore import Qt, QItemSelectionModel, pyqtSignal
 
 from .. import AbstractFlatItemModel, temp_file
@@ -34,22 +34,34 @@ class AttachmentsListWidget(QWidget):
         toolbar.setFloatable(False)
         toolbar.setMovable(False)
 
-        btn_open = QAction('Отвори', self)
-        btn_open.setToolTip('Отваря избрания файл с подходяща програма')
-        btn_open.triggered.connect(self.open_attachment)
+        act_open = QAction('Отвори', self)
+        act_open.setToolTip('Отваря избрания файл с подходяща програма')
+        act_open.triggered.connect(self.open_attachment)
         self.key_pressed.connect(self.hande_enter)
         self.list.doubleClicked.connect(self.open_attachment)
-        toolbar.addAction(btn_open)
+        btn_open = QToolButton()
+        btn_open.setDefaultAction(act_open)
+        btn_open.setIcon(self.style().standardIcon(QStyle.SP_DialogOpenButton))
+        btn_open.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
+        toolbar.addWidget(btn_open)
 
-        btn_save = QAction('Запиши', self)
-        btn_save.setToolTip('Записва избрания файл')
-        btn_save.triggered.connect(self.save_attachment)
-        toolbar.addAction(btn_save)
+        act_save = QAction('Запиши', self)
+        act_save.setToolTip('Записва избрания файл')
+        act_save.triggered.connect(self.save_attachment)
+        btn_save = QToolButton()
+        btn_save.setDefaultAction(act_save)
+        btn_save.setIcon(self.style().standardIcon(QStyle.SP_DialogSaveButton))
+        btn_save.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
+        toolbar.addWidget(btn_save)
 
-        btn_save_all = QAction('Запиши всички', self)
-        btn_save_all.setToolTip('Записва всички приложени файлове в zip')
-        btn_save_all.triggered.connect(self.save_all_attachments)
-        toolbar.addAction(btn_save_all)
+        act_save_all = QAction('Запиши всички', self)
+        act_save_all.setToolTip('Записва всички приложени файлове в zip')
+        act_save_all.triggered.connect(self.save_all_attachments)
+        btn_save_all = QToolButton()
+        btn_save_all.setDefaultAction(act_save_all)
+        btn_save_all.setIcon(self.style().standardIcon(QStyle.SP_DialogSaveButton))
+        btn_save_all.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
+        toolbar.addWidget(btn_save_all)
 
         layout.addWidget(toolbar)
         layout.addWidget(self.list)

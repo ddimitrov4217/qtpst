@@ -30,3 +30,7 @@ QTextEdit#attributeValueText {
 	font-family: Liberation Mono;
 	font-size: 9pt;
 }
+
+QToolButton {
+	height: 16px;
+}
