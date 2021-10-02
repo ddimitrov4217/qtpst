@@ -9,6 +9,7 @@ import click
 
 from PyQt5.QtWidgets import QApplication, QMainWindow, QToolBar, QMessageBox
 from PyQt5.QtWidgets import QStyle, QAction, QSplitter
+from PyQt5.QtCore import Qt
 
 from . import mbox_wrapper, global_env, app_css, temp_file
 from . pstfiles import PstFilesDialog, read_pst
@@ -104,12 +105,17 @@ def exception_hook(_etype, value, trace):
     print(text, file=sys.stderr)
 
     if QApplication.instance() is not None:
-        dialog = QMessageBox.critical(
-            None, 'Грешка', text,
-            buttons=QMessageBox.Ignore | QMessageBox.Abort,
-            defaultButton=QMessageBox.Ignore)
-
-        if dialog == QMessageBox.Abort:
+        dialog = QMessageBox()
+        dialog.setStandardButtons(QMessageBox.Ignore | QMessageBox.Abort)
+        dialog.setDefaultButton(QMessageBox.Ignore)
+        dialog.setIcon(QMessageBox.Critical)
+        dialog.setWindowTitle('Грешка')
+        dialog.setTextFormat(Qt.RichText)
+        dialog.setText('<b>В програмата възникна непредвидена грешка.</b>')
+        dialog.setInformativeText(str(value))
+        dialog.setDetailedText(text)
+        dialog.exec()
+        if dialog.clickedButton() == QMessageBox.Abort:
             sys.exit(127)
 
 
