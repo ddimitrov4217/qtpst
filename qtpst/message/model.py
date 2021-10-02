@@ -90,26 +90,13 @@ class MessageNid(Message):
             self.properties.append(attv)
         self.load_dict()
 
-        def att_str(code, value):
-            vsize = len(value) if value is not None else 0
-            return AttributeValue(code=code, vtype='String', vsize=vsize, value=value)
-
-        def att_int(code, value):
-            return AttributeValue(code=code, vtype='Integer', vsize=8, value=value)
-
-        def att_boo(code, value):
-            return AttributeValue(code=code, vtype='Boolean', vsize=8, value=value)
-
         for ano, att_ in enumerate(mbox_wrapper.mbox.list_attachments(nid)):
             _nid, anid, name, size, _mimet, _mime, cid = att_
             data_mime, data_name, data = mbox_wrapper.mbox.get_attachment(nid, anid)
 
             att = Attachment()
             self.attachments.append(att)
-            att.properties.append(AttributeValue(
-                code='AttachDataObject', vtype='Binary', vsize=size,
-                value=PropertyValue.BinaryValue(data)))
-
+            att.properties.append(att_bin('AttachDataObject', data, size))
             att.properties.append(att_int('AttachNumber', ano))
             att.properties.append(att_str('AttachFilename', name))
             att.properties.append(att_str('AttachLongFilename', data_name))
@@ -190,3 +177,22 @@ def find_smime(attachment):
         data = attachment.dict.get('AttachDataObject', None)
         return MessageSmime(str(data.value.data))
     return None
+
+
+def att_str(code, value):
+    vsize = len(value) if value is not None else 0
+    return AttributeValue(code=code, vtype='String', vsize=vsize, value=value)
+
+
+def att_int(code, value):
+    return AttributeValue(code=code, vtype='Integer', vsize=8, value=value)
+
+
+def att_boo(code, value):
+    return AttributeValue(code=code, vtype='Boolean', vsize=8, value=value)
+
+
+def att_bin(code, value, size):
+    return AttributeValue(
+        code=code, vtype='Binary', vsize=size,
+        value=PropertyValue.BinaryValue(value))
