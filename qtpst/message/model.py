@@ -58,13 +58,24 @@ class Message(AttributesContainer):
         self.smimes = []
 
     def append_smime(self, smime):
+        # TODO S/MIME да се не се добавя като приложен файл; но да има индикация
         if smime is not None:
             self.smimes.append(smime)
 
     def merge_smime(self):
-        # XXX Вероятно е само едно S/MIME; ако са повече, как се merge-ват
-        # TODO Merge със текущото съобщения
-        pass
+        if not self.smimes:
+            return
+
+        if len(self.smimes) > 1:
+            log.warn('Too many S/MIME attachemnts')
+        for prop in self.smimes[0].properties:
+            if prop.code in self.dict:
+                log.warn('Overwrite property: %s', prop.code)
+            self.properties.append(prop)
+        self.load_dict()
+
+        for att in self.smimes[0].attachments:
+            self.attachments.append(att)
 
 
 class Recipient(AttributesContainer):
@@ -112,6 +123,8 @@ class MessageNid(Message):
             att.load_dict()
             self.append_smime(find_smime(att))
 
+        self.merge_smime()
+
 
 class MessageMsg(Message):
     def __init__(self, msgfile):
@@ -120,6 +133,7 @@ class MessageMsg(Message):
             msgole = OleMessage(ole, ole.root)
             self.copy(msgole, self)
         self.load_dict()
+        self.merge_smime()
 
     def copy(self, src, dst):
         copy_ole_properties(src.properties, dst.properties)
@@ -149,11 +163,35 @@ class MessageMsg(Message):
 class MessageSmime(Message):
     def __init__(self, smime_data):
         super().__init__()
-        self.data = MimeData(smime_data)
-        log.debug(self.data)
-        log.debug(self.data.parts)
-        # TODO Обслужване на S/MIME имейли - съдържание и приложение файлове
-        # XXX За тестване department.pst nid 2114468 2114436
+        self.mime = MimeData(smime_data)
+        ano = 0
+        for ino, (name, part) in enumerate(self.mime.parts):
+            content_type = part.get_content_type()
+            log.debug('smime %d: %s', ino, content_type)
+            if (part.get_content_disposition() is None and
+                    content_type in ('text/plain', 'text/html')):
+                if content_type == 'text/plain':
+                    text = MimeData.content(part)
+                    att = AttributeValue(code='Body', vtype='String', vsize=len(text), value=text)
+                    self.properties.append(att)
+                else:
+                    # TODO Добавяне на S/MIME text/html; за сега няма тест за проучване
+                    # TODO S/MIME text/html да се добави Html и InternetCodepage
+                    pass
+            else:
+                att = Attachment()
+                self.attachments.append(att)
+                content = part.get_payload(decode=True)
+                name = part.get_filename()
+                att.properties.append(att_bin('AttachDataObject', memoryview(content), len(content)))
+                att.properties.append(att_int('AttachNumber', ano))
+                att.properties.append(att_str('AttachFilename', name))
+                att.properties.append(att_str('AttachLongFilename', name))
+                att.properties.append(att_str('DisplayName', name))
+                att.properties.append(att_str('AttachMimeTag', part.get_content_maintype()))
+                # TODO Inline картинки в S/MIME AttachContentId
+                att.load_dict()
+                ano += 1
 
 
 def create_att_value(code, pv):
@@ -175,7 +213,7 @@ def find_smime(attachment):
     mime = attachment.dict.get('AttachMimeTag', None)
     if mime is not None and mime.value in ('multipart/signed',):
         data = attachment.dict.get('AttachDataObject', None)
-        return MessageSmime(str(data.value.data))
+        return MessageSmime(data.value.data.tobytes().decode())
     return None
 
 
