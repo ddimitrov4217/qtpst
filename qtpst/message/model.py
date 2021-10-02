@@ -58,19 +58,20 @@ class Message(AttributesContainer):
         self.smimes = []
 
     def append_smime(self, smime):
-        # TODO S/MIME да се не се добавя като приложен файл; но да има индикация
         if smime is not None:
             self.smimes.append(smime)
+            return True
+        return False
 
     def merge_smime(self):
         if not self.smimes:
             return
 
         if len(self.smimes) > 1:
-            log.warn('Too many S/MIME attachemnts')
+            log.warning('Too many S/MIME attachemnts')
         for prop in self.smimes[0].properties:
             if prop.code in self.dict:
-                log.warn('Overwrite property: %s', prop.code)
+                log.warning('Overwrite property: %s', prop.code)
             self.properties.append(prop)
         self.load_dict()
 
@@ -106,7 +107,6 @@ class MessageNid(Message):
             data_mime, data_name, data = mbox_wrapper.mbox.get_attachment(nid, anid)
 
             att = Attachment()
-            self.attachments.append(att)
             att.properties.append(att_bin('AttachDataObject', data, size))
             att.properties.append(att_int('AttachNumber', ano))
             att.properties.append(att_str('AttachFilename', name))
@@ -121,7 +121,8 @@ class MessageNid(Message):
             # TODO да се различават приложените съобщения и да се зареждат
 
             att.load_dict()
-            self.append_smime(find_smime(att))
+            if not self.append_smime(find_smime(att)):
+                self.attachments.append(att)
 
         self.merge_smime()
 
@@ -149,9 +150,9 @@ class MessageMsg(Message):
             for att_src in src.attachments:
                 att_dst = Attachment()
                 self.copy(att_src, att_dst)
-                dst.attachments.append(att_dst)
                 dst.load_dict()
-                self.append_smime(find_smime(att_dst))
+                if not self.append_smime(find_smime(att_dst)):
+                    dst.attachments.append(att_dst)
 
         if isinstance(src, OleAttachment):
             if src.message is not None:
