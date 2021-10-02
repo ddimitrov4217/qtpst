@@ -173,12 +173,11 @@ class MessageSmime(Message):
                     content_type in ('text/plain', 'text/html')):
                 if content_type == 'text/plain':
                     text = MimeData.content(part)
-                    att = AttributeValue(code='Body', vtype='String', vsize=len(text), value=text)
-                    self.properties.append(att)
+                    self.properties.append(att_str('Body', text))
                 else:
-                    # TODO Добавяне на S/MIME text/html; за сега няма тест за проучване
-                    # TODO S/MIME text/html да се добави Html и InternetCodepage
-                    pass
+                    content = part.get_payload(decode=True)
+                    self.properties.append(att_str('InternetCodepage', part.get_param('charset')))
+                    self.properties.append(att_bin('Html', memoryview(content), len(content)))
             else:
                 att = Attachment()
                 self.attachments.append(att)
@@ -190,7 +189,7 @@ class MessageSmime(Message):
                 att.properties.append(att_str('AttachLongFilename', name))
                 att.properties.append(att_str('DisplayName', name))
                 att.properties.append(att_str('AttachMimeTag', part.get_content_maintype()))
-                # TODO Inline картинки в S/MIME AttachContentId
+                # TODO Inline картинки в S/MIME AttachContentId; за сега няма тест за проучване
                 att.load_dict()
                 ano += 1
 
