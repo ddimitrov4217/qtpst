@@ -11,6 +11,7 @@ from readms.readpst import PropertyValue
 
 from .. import AbstractFlatItemModel
 from .. import app_css
+from . attachments import SaveDialog
 
 log = logging.getLogger(__name__)
 
@@ -50,7 +51,7 @@ class AttributesList(QTreeView):
             return
         selected = self.selectedIndexes()
         attr = self.model().props[selected[0].row()]
-        if attr.vtype == 'String' and attr.vsize >= 102 or attr.vtype == 'Binary':
+        if attr.vtype == 'String' and attr.vsize >= 102 or attr.vtype in ('Binary', 'Object'):
             self.value_dialog.set_attribute(attr)
             self.value_dialog.exec()
 
@@ -140,5 +141,7 @@ class AttributeValueWidget(QDialog):
         self.btn_save.setEnabled(attr.vtype == 'Binary')
 
     def save_attribute(self):
-        # TODO Запис на Binary атрибут във файл
-        log.debug(self.attr.code)
+        file_name = SaveDialog.open_dialog('%s.bin' % self.attr.code)
+        if file_name is not None:
+            with open(file_name, 'wb') as fout:
+                fout.write(self.attr.value.data.tobytes())
