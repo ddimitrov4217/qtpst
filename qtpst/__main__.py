@@ -92,7 +92,7 @@ class AppNavigator(QMainWindow):
         vbox.setContentsMargins(0, 0, 0, 0)
         top.setLayout(vbox)
 
-        self.search = SearchWidget()
+        self.search = SearchWidget(self.navigator.load_tree_nodes)
         self.search.hide()
 
         vbox.addWidget(self.search)

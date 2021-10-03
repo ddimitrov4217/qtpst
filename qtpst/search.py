@@ -12,8 +12,9 @@ log = logging.getLogger(__name__)
 
 
 class SearchWidget(QWidget):
-    def __init__(self):
+    def __init__(self, callback_search):
         super().__init__()
+        self.callback_search = callback_search
         self.setup_ui()
 
     def setup_ui(self):
@@ -55,5 +56,6 @@ class SearchWidget(QWidget):
             apply_mode = self.cbx_apply_mode.currentIndex()
             match_mode = self.cbx_match_mode.currentIndex()
             log.debug('%s, apply=%d, match=%d', self.txt_search.text(), apply_mode, match_mode)
-            # TODO Изпълняване на търсенето
-            # TODO Сигнализиране на navigator за промяната
+            found = mbox_wrapper.mbox.set_filter(text, match_mode+1, apply_mode+1)
+            found = found['nid'] if found is not None else None
+            self.callback_search(found)
