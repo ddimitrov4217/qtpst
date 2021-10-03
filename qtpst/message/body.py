@@ -159,7 +159,8 @@ class HtmlBodyHeading(QTextEdit):
             content.append(self.format_email_addr(name, addr))
             content.append('<br/>')
 
-    def format_email_addr(self, name, addr):
+    @staticmethod
+    def format_email_addr(name, addr):
         result = []
         if name is not None:
             result.append(' %s' % name.value)

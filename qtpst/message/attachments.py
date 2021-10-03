@@ -166,7 +166,8 @@ class AttachmentsListModel(AbstractFlatItemModel):
 
         return None
 
-    def att_value(self, attv, *alt_names):
+    @staticmethod
+    def att_value(attv, *alt_names):
         for attn in alt_names:
             result_att = attv.dict.get(attn, None)
             if result_att is not None and result_att.value is not None:
