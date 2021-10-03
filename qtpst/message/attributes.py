@@ -8,6 +8,7 @@ from PyQt5.QtWidgets import QTreeView, QDialog, QTextEdit, QToolBar, QPushButton
 from PyQt5.QtWidgets import QHBoxLayout, QVBoxLayout, QStyle
 from PyQt5.QtCore import Qt, QItemSelectionModel, pyqtSignal
 from readms.readpst import PropertyValue
+from readms.readutl import uncommpress_rtf
 
 from .. import AbstractFlatItemModel
 from .. import app_css
@@ -144,7 +145,14 @@ class AttributeValueWidget(QDialog):
         self.btn_save.setEnabled(attr.vtype == 'Binary')
 
     def save_attribute(self):
-        file_name = SaveDialog.open_dialog('%s.bin' % self.attr.code)
+        value = self.attr.value.data.tobytes()
+        # TODO Изглежда RtfCompressed е wrap-нап HTML; това може да се изпозлва вместо Html атрибута
+        if self.attr.code == 'RtfCompressed':
+            file_name = '%s.rtf' % self.attr.code
+            value = bytearray(uncommpress_rtf(value))
+        else:
+            file_name = '%s.bin' % self.attr.code
+        file_name = SaveDialog.open_dialog(file_name)
         if file_name is not None:
             with open(file_name, 'wb') as fout:
-                fout.write(self.attr.value.data.tobytes())
+                fout.write(value)
