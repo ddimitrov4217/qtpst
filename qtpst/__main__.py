@@ -93,7 +93,6 @@ class AppNavigator(QMainWindow):
         top.setLayout(vbox)
 
         self.search = SearchWidget()
-        self.search.setMaximumHeight(20)
         self.search.hide()
 
         vbox.addWidget(self.search)
