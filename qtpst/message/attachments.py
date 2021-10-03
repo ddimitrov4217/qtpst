@@ -6,10 +6,10 @@ from zipfile import ZipFile
 import logging
 
 from PyQt5.QtWidgets import QTreeView, QWidget, QToolBar, QVBoxLayout, QAction
-from PyQt5.QtWidgets import QMessageBox, QFileDialog, QToolButton, QStyle
+from PyQt5.QtWidgets import QMessageBox, QFileDialog, QStyle
 from PyQt5.QtCore import Qt, QItemSelectionModel, pyqtSignal
 
-from .. import AbstractFlatItemModel, temp_file
+from .. import AbstractFlatItemModel, temp_file, create_tool_button
 
 log = logging.getLogger(__name__)
 
@@ -39,28 +39,19 @@ class AttachmentsListWidget(QWidget):
         act_open.triggered.connect(self.open_attachment)
         self.key_pressed.connect(self.hande_enter)
         self.list.doubleClicked.connect(self.open_attachment)
-        btn_open = QToolButton()
-        btn_open.setDefaultAction(act_open)
-        btn_open.setIcon(self.style().standardIcon(QStyle.SP_DialogOpenButton))
-        btn_open.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
+        btn_open = create_tool_button(self, act_open, QStyle.SP_DialogOpenButton)
         toolbar.addWidget(btn_open)
 
         act_save = QAction('Запиши', self)
         act_save.setToolTip('Записва избрания файл')
         act_save.triggered.connect(self.save_attachment)
-        btn_save = QToolButton()
-        btn_save.setDefaultAction(act_save)
-        btn_save.setIcon(self.style().standardIcon(QStyle.SP_DialogSaveButton))
-        btn_save.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
+        btn_save = create_tool_button(self, act_save, QStyle.SP_DialogSaveButton)
         toolbar.addWidget(btn_save)
 
         act_save_all = QAction('Запиши всички', self)
         act_save_all.setToolTip('Записва всички приложени файлове в zip')
         act_save_all.triggered.connect(self.save_all_attachments)
-        btn_save_all = QToolButton()
-        btn_save_all.setDefaultAction(act_save_all)
-        btn_save_all.setIcon(self.style().standardIcon(QStyle.SP_DialogSaveButton))
-        btn_save_all.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
+        btn_save_all = create_tool_button(self, act_save_all, QStyle.SP_DialogSaveButton)
         toolbar.addWidget(btn_save_all)
 
         layout.addWidget(toolbar)

@@ -8,10 +8,10 @@ import logging
 import click
 
 from PyQt5.QtWidgets import QApplication, QMainWindow, QToolBar, QMessageBox
-from PyQt5.QtWidgets import QStyle, QAction, QSplitter, QToolButton, QVBoxLayout, QWidget
+from PyQt5.QtWidgets import QStyle, QAction, QSplitter, QVBoxLayout, QWidget
 from PyQt5.QtCore import Qt
 
-from . import mbox_wrapper, global_env, app_css, temp_file
+from . import mbox_wrapper, global_env, app_css, temp_file, create_tool_button
 from . pstfiles import PstFilesDialog, read_pst
 from . navigator import MboxNavigator
 from . messages import MessagesList
@@ -43,37 +43,25 @@ class AppNavigator(QMainWindow):
         act_open = QAction('Open', self)
         act_open.setToolTip('Избор и отваряне на pst файл')
         act_open.triggered.connect(self.open_pst_file)
-        btn_open = QToolButton()
-        btn_open.setDefaultAction(act_open)
-        btn_open.setIcon(self.style().standardIcon(QStyle.SP_DialogOpenButton))
-        btn_open.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
+        btn_open = create_tool_button(self, act_open, QStyle.SP_DialogOpenButton)
         toolbar.addWidget(btn_open)
 
         act_colored = QAction('Оцветени', self)
         act_colored.setToolTip('Извежда само имейлите отбелязани с цветна категория')
         act_colored.triggered.connect(self.filter_only_colored)
-        btn_colored = QToolButton()
-        btn_colored.setDefaultAction(act_colored)
-        btn_colored.setIcon(self.style().standardIcon(QStyle.SP_FileDialogInfoView))
-        btn_colored.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
+        btn_colored = create_tool_button(self, act_colored, QStyle.SP_FileDialogInfoView)
         toolbar.addWidget(btn_colored)
 
         act_clear = QAction('Изчисти филтрите', self)
         act_clear.setToolTip('Изчиства всички приложени филтри')
         act_clear.triggered.connect(self.filter_clear)
-        btn_clear = QToolButton()
-        btn_clear.setDefaultAction(act_clear)
-        btn_clear.setIcon(self.style().standardIcon(QStyle.SP_LineEditClearButton))
-        btn_clear.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
+        btn_clear = create_tool_button(self, act_clear, QStyle.SP_LineEditClearButton)
         toolbar.addWidget(btn_clear)
 
         act_search = QAction('Потърси', self)
         act_search.setToolTip('Извежда панел, чрез който може да се търси в съдържанието на имейлите')
         act_search.triggered.connect(self.open_search)
-        btn_search = QToolButton()
-        btn_search.setDefaultAction(act_search)
-        btn_search.setIcon(self.style().standardIcon(QStyle.SP_MessageBoxQuestion))
-        btn_search.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
+        btn_search = create_tool_button(self, act_search, QStyle.SP_MessageBoxQuestion)
         toolbar.addWidget(btn_search)
 
         self.navigator = MboxNavigator()

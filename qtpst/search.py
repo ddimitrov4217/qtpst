@@ -3,10 +3,8 @@
 
 import logging
 
-from PyQt5.QtWidgets import QWidget, QHBoxLayout, QComboBox, QLineEdit, QAction, QToolButton, QStyle
-from PyQt5.QtCore import Qt
-
-from . import mbox_wrapper
+from PyQt5.QtWidgets import QWidget, QHBoxLayout, QComboBox, QLineEdit, QAction, QStyle
+from . import mbox_wrapper, create_tool_button
 
 log = logging.getLogger(__name__)
 
@@ -25,10 +23,7 @@ class SearchWidget(QWidget):
         act_search = QAction('Търси', self)
         act_search.setToolTip('Стартира търсенето; също става и с Enter в кутийката')
         act_search.triggered.connect(self.start_search)
-        btn_search = QToolButton()
-        btn_search.setDefaultAction(act_search)
-        btn_search.setIcon(self.style().standardIcon(QStyle.SP_BrowserReload))
-        btn_search.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
+        btn_search = create_tool_button(self, act_search, QStyle.SP_BrowserReload)
         layout.addWidget(btn_search)
 
         self.txt_search = QLineEdit()

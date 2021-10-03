@@ -3,8 +3,8 @@
 
 from abc import abstractmethod
 from os import path
-from PyQt5.QtCore import QAbstractItemModel, QModelIndex
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QAbstractItemModel, QModelIndex
+from PyQt5.QtWidgets import QToolButton
 from wxpst.model import mbox_wrapper, global_env, temp_file
 
 
@@ -43,3 +43,11 @@ def app_css():
     css_file = path.join(path.dirname(__file__), 'resources', 'app.css')
     with open(css_file, encoding='UTF-8') as fin:
         return fin.read()
+
+
+def create_tool_button(widget, action, sp_style):
+    btn = QToolButton()
+    btn.setDefaultAction(action)
+    btn.setIcon(widget.style().standardIcon(sp_style))
+    btn.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
+    return btn
