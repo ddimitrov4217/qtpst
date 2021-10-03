@@ -8,7 +8,7 @@ import logging
 import click
 
 from PyQt5.QtWidgets import QApplication, QMainWindow, QToolBar, QMessageBox
-from PyQt5.QtWidgets import QStyle, QAction, QSplitter, QToolButton
+from PyQt5.QtWidgets import QStyle, QAction, QSplitter, QToolButton, QVBoxLayout, QWidget
 from PyQt5.QtCore import Qt
 
 from . import mbox_wrapper, global_env, app_css, temp_file
@@ -16,10 +16,9 @@ from . pstfiles import PstFilesDialog, read_pst
 from . navigator import MboxNavigator
 from . messages import MessagesList
 from . message import AppMessageFile, AppMessageNid
+from . search import SearchWidget
 
 log = logging.getLogger(__name__)
-
-# TODO Кутийка за търсене по ключови думи
 
 
 class AppNavigator(QMainWindow):
@@ -68,6 +67,15 @@ class AppNavigator(QMainWindow):
         btn_clear.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
         toolbar.addWidget(btn_clear)
 
+        act_search = QAction('Потърси', self)
+        act_search.setToolTip('Извежда панел, чрез който може да се търси в съдържанието на имейлите')
+        act_search.triggered.connect(self.open_search)
+        btn_search = QToolButton()
+        btn_search.setDefaultAction(act_search)
+        btn_search.setIcon(self.style().standardIcon(QStyle.SP_MessageBoxQuestion))
+        btn_search.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
+        toolbar.addWidget(btn_search)
+
         self.navigator = MboxNavigator()
         self.messages = MessagesList()
         self.navigator.set_propagation_nid(self.messages.set_nid)
@@ -77,7 +85,21 @@ class AppNavigator(QMainWindow):
         splitter.addWidget(self.messages)
         splitter.setStretchFactor(0, 5)
         splitter.setStretchFactor(1, 9)
-        self.setCentralWidget(splitter)
+
+        top = QWidget()
+        top.setObjectName('topWidget')
+        vbox = QVBoxLayout()
+        vbox.setContentsMargins(0, 0, 0, 0)
+        top.setLayout(vbox)
+
+        self.search = SearchWidget()
+        self.search.setMaximumHeight(20)
+        self.search.hide()
+
+        vbox.addWidget(self.search)
+        vbox.addWidget(splitter)
+
+        self.setCentralWidget(top)
         self.setStyleSheet(app_css())
 
     def set_title(self):
@@ -108,6 +130,12 @@ class AppNavigator(QMainWindow):
     def closeEvent(self, event):
         self.messages.handle_close()
         super().closeEvent(event)
+
+    def open_search(self):
+        if self.search.isHidden():
+            self.search.show()
+        else:
+            self.search.hide()
 
 
 def exception_hook(_etype, value, trace):
