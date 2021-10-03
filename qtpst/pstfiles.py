@@ -6,10 +6,10 @@ from datetime import datetime
 
 import logging
 
-from PyQt5.QtWidgets import QDialog, QDialogButtonBox, QVBoxLayout, QTreeView, QAbstractItemView
+from PyQt5.QtWidgets import QDialog, QDialogButtonBox, QVBoxLayout, QAbstractItemView, QTreeView
 from PyQt5.QtCore import Qt
 
-from . import mbox_wrapper, global_env, AbstractFlatItemModel
+from . import mbox_wrapper, global_env, AbstractFlatItemModel, TreeViewBase
 
 log = logging.getLogger(__name__)
 
@@ -48,6 +48,8 @@ class PstFilesDialog(QDialog):
 
         self.body.setObjectName('pstFiles')
         self.body.setAlternatingRowColors(True)
+        # self.body.enter_pressed.connect(self.open_file)
+        self.body.doubleClicked.connect(self.open_file)
 
         self.layout.addWidget(self.body)
         self.layout.addWidget(self.buttonBox)

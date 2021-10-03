@@ -4,22 +4,19 @@
 import logging
 import re
 
-from PyQt5.QtWidgets import QTreeView, QDialog, QTextEdit, QToolBar, QPushButton
+from PyQt5.QtWidgets import QDialog, QTextEdit, QToolBar, QPushButton
 from PyQt5.QtWidgets import QHBoxLayout, QVBoxLayout, QStyle
-from PyQt5.QtCore import Qt, QItemSelectionModel, pyqtSignal
+from PyQt5.QtCore import Qt, QItemSelectionModel
 from readms.readpst import PropertyValue
 from readms.readutl import uncommpress_rtf
 
-from .. import AbstractFlatItemModel
-from .. import app_css
+from .. import AbstractFlatItemModel, TreeViewBase, app_css
 from . attachments import SaveDialog
 
 log = logging.getLogger(__name__)
 
 
-class AttributesList(QTreeView):
-    key_pressed = pyqtSignal(int)
-
+class AttributesList(TreeViewBase):
     def __init__(self, props, value_dialog=None):
         super().__init__()
         self.setModel(AttributesListModel(props))
@@ -33,19 +30,11 @@ class AttributesList(QTreeView):
 
         self.setObjectName('attrsList')
         self.setAlternatingRowColors(True)
-        self.key_pressed.connect(self.hande_enter)
         self.doubleClicked.connect(self.open_value_dialog)
+        self.enter_pressed.connect(self.open_value_dialog)
 
         ix = self.model().createIndex(0, 0)
         self.selectionModel().select(ix, QItemSelectionModel.Select | QItemSelectionModel.Rows)
-
-    def keyPressEvent(self, event):
-        super().keyPressEvent(event)
-        self.key_pressed.emit(event.key())
-
-    def hande_enter(self, key):
-        if key in (Qt.Key_Return, Qt.Key_Enter):
-            self.open_value_dialog()
 
     def open_value_dialog(self):
         if self.value_dialog is None:

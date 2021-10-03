@@ -4,11 +4,11 @@
 import re
 import logging
 
-from PyQt5.QtWidgets import QTreeView, QAbstractItemView, QStyledItemDelegate
-from PyQt5.QtCore import Qt, QItemSelectionModel, pyqtSignal, QPoint, QRect, QModelIndex
+from PyQt5.QtWidgets import QAbstractItemView, QStyledItemDelegate
+from PyQt5.QtCore import Qt, QItemSelectionModel, QPoint, QRect, QModelIndex
 from PyQt5.QtGui import QColor, QPen, QBrush
 
-from . import mbox_wrapper, AbstractFlatItemModel
+from . import mbox_wrapper, AbstractFlatItemModel, TreeViewBase
 from . message import AppMessageNid
 
 log = logging.getLogger(__name__)
@@ -16,9 +16,7 @@ log = logging.getLogger(__name__)
 # TODO Колонка с индикатор за приложен файл
 
 
-class MessagesList(QTreeView):
-    key_pressed = pyqtSignal(int)
-
+class MessagesList(TreeViewBase):
     def __init__(self):
         super().__init__()
         self.init_ui()
@@ -33,7 +31,7 @@ class MessagesList(QTreeView):
         self.setObjectName('messages')
         self.setAlternatingRowColors(True)
         self.doubleClicked.connect(self.handle_open)
-        self.key_pressed.connect(self.hande_enter)
+        self.enter_pressed.connect(self.handle_open)
         self.setItemDelegateForColumn(3, CategoryDelegate(self))
         self.setSortingEnabled(True)
 
@@ -43,23 +41,16 @@ class MessagesList(QTreeView):
         self.selectionModel().select(ix, QItemSelectionModel.Select | QItemSelectionModel.Rows)
         self.scrollTo(ix, QAbstractItemView.EnsureVisible)
 
-    def handle_open(self, index):
+    def handle_open(self):
+        index = self.selectedIndexes()[0]
         nid = self.model().model_data[index.row()][0]
         app = AppMessageNid(nid)
         self.opened_messages.append(app)
         app.show()
 
-    def hande_enter(self, key):
-        if key in (Qt.Key_Return, Qt.Key_Enter):
-            self.handle_open(self.selectedIndexes()[0])
-
     def handle_close(self):
         for app in self.opened_messages:
             app.close()
-
-    def keyPressEvent(self, event):
-        super().keyPressEvent(event)
-        self.key_pressed.emit(event.key())
 
 
 class MessagesListModel(AbstractFlatItemModel):

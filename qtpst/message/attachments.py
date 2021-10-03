@@ -5,11 +5,11 @@ from os import startfile, path
 from zipfile import ZipFile
 import logging
 
-from PyQt5.QtWidgets import QTreeView, QWidget, QToolBar, QVBoxLayout, QAction
+from PyQt5.QtWidgets import QWidget, QToolBar, QVBoxLayout, QAction
 from PyQt5.QtWidgets import QMessageBox, QFileDialog, QStyle
-from PyQt5.QtCore import Qt, QItemSelectionModel, pyqtSignal
+from PyQt5.QtCore import Qt, QItemSelectionModel
 
-from .. import AbstractFlatItemModel, temp_file, create_tool_button
+from .. import AbstractFlatItemModel, temp_file, create_tool_button, TreeViewBase
 
 log = logging.getLogger(__name__)
 
@@ -18,8 +18,6 @@ log = logging.getLogger(__name__)
 
 
 class AttachmentsListWidget(QWidget):
-    key_pressed = pyqtSignal(int)
-
     def __init__(self, attachments):
         super().__init__()
         self.list = AttachmentsList(attachments)
@@ -37,7 +35,7 @@ class AttachmentsListWidget(QWidget):
         act_open = QAction('Отвори', self)
         act_open.setToolTip('Отваря избрания файл с подходяща програма')
         act_open.triggered.connect(self.open_attachment)
-        self.key_pressed.connect(self.hande_enter)
+        self.list.enter_pressed.connect(self.open_attachment)
         self.list.doubleClicked.connect(self.open_attachment)
         btn_open = create_tool_button(self, act_open, QStyle.SP_DialogOpenButton)
         toolbar.addWidget(btn_open)
@@ -102,16 +100,8 @@ class AttachmentsListWidget(QWidget):
             refname = temp_file.write_temp(content.value.data, refname)
             startfile(refname)
 
-    def hande_enter(self, key):
-        if key in (Qt.Key_Return, Qt.Key_Enter):
-            self.open_attachment()
 
-    def keyPressEvent(self, event):
-        super().keyPressEvent(event)
-        self.key_pressed.emit(event.key())
-
-
-class AttachmentsList(QTreeView):
+class AttachmentsList(TreeViewBase):
     def __init__(self, attachments):
         super().__init__()
         self.setModel(AttachmentsListModel(attachments))

@@ -3,8 +3,8 @@
 
 from abc import abstractmethod
 from os import path
-from PyQt5.QtCore import Qt, QAbstractItemModel, QModelIndex
-from PyQt5.QtWidgets import QToolButton
+from PyQt5.QtCore import Qt, QAbstractItemModel, QModelIndex, pyqtSignal
+from PyQt5.QtWidgets import QToolButton, QTreeView
 from wxpst.model import mbox_wrapper, global_env, temp_file
 
 
@@ -51,3 +51,15 @@ def create_tool_button(widget, action, sp_style):
     btn.setIcon(widget.style().standardIcon(sp_style))
     btn.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
     return btn
+
+
+class TreeViewBase(QTreeView):
+    enter_pressed = pyqtSignal()
+
+    def __init__(self):
+        super().__init__()
+
+    def keyPressEvent(self, event):
+        super().keyPressEvent(event)
+        if event.key() in (Qt.Key_Return, Qt.Key_Enter):
+            self.enter_pressed.emit()
