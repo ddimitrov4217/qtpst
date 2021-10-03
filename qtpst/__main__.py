@@ -28,10 +28,8 @@ class AppNavigator(QMainWindow):
 
     def init_ui(self):
         self.set_title()
-        icon = self.style().standardIcon(QStyle.SP_TitleBarMenuButton)
-        self.setWindowIcon(icon)
-        qapp = QApplication.instance()
-        geometry = qapp.primaryScreen().availableGeometry()
+        self.setWindowIcon(self.style().standardIcon(QStyle.SP_TitleBarMenuButton))
+        geometry = QApplication.instance().primaryScreen().availableGeometry()
         self.resize(geometry.width()*0.7, geometry.height()*0.7)
 
         toolbar = QToolBar('global actions')
@@ -43,26 +41,22 @@ class AppNavigator(QMainWindow):
         act_open = QAction('Open', self)
         act_open.setToolTip('Избор и отваряне на pst файл')
         act_open.triggered.connect(self.open_pst_file)
-        btn_open = create_tool_button(self, act_open, QStyle.SP_DialogOpenButton)
-        toolbar.addWidget(btn_open)
+        toolbar.addWidget(create_tool_button(self, act_open, QStyle.SP_DialogOpenButton))
 
         act_colored = QAction('Оцветени', self)
         act_colored.setToolTip('Извежда само имейлите отбелязани с цветна категория')
         act_colored.triggered.connect(self.filter_only_colored)
-        btn_colored = create_tool_button(self, act_colored, QStyle.SP_FileDialogInfoView)
-        toolbar.addWidget(btn_colored)
+        toolbar.addWidget(create_tool_button(self, act_colored, QStyle.SP_FileDialogInfoView))
 
         act_clear = QAction('Изчисти филтрите', self)
         act_clear.setToolTip('Изчиства всички приложени филтри')
         act_clear.triggered.connect(self.filter_clear)
-        btn_clear = create_tool_button(self, act_clear, QStyle.SP_LineEditClearButton)
-        toolbar.addWidget(btn_clear)
+        toolbar.addWidget(create_tool_button(self, act_clear, QStyle.SP_LineEditClearButton))
 
         act_search = QAction('Потърси', self)
         act_search.setToolTip('Извежда панел, чрез който може да се търси в съдържанието на имейлите')
         act_search.triggered.connect(self.open_search)
-        btn_search = create_tool_button(self, act_search, QStyle.SP_MessageBoxQuestion)
-        toolbar.addWidget(btn_search)
+        toolbar.addWidget(create_tool_button(self, act_search, QStyle.SP_MessageBoxQuestion))
 
         self.navigator = MboxNavigator()
         self.messages = MessagesList()

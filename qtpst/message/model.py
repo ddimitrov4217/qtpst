@@ -92,7 +92,11 @@ class Attachment(AttributesContainer):
 class MessageNid(Message):
     def __init__(self, nid):
         super().__init__()
+        self.load_properties(nid)
+        self.load_attachments(nid)
+        self.merge_smime()
 
+    def load_properties(self, nid):
         self.pc = PropertyContext(mbox_wrapper.mbox.get_mbox(), nid)
         for pname in self.pc._propx:
             ptag = self.pc._propx[pname]
@@ -102,6 +106,7 @@ class MessageNid(Message):
             self.properties.append(attv)
         self.load_dict()
 
+    def load_attachments(self, nid):
         for ano, att_ in enumerate(mbox_wrapper.mbox.list_attachments(nid)):
             _nid, anid, name, size, _mimet, _mime, cid = att_
             data_mime, data_name, data = mbox_wrapper.mbox.get_attachment(nid, anid)
@@ -123,8 +128,6 @@ class MessageNid(Message):
             att.load_dict()
             if not self.append_smime(find_smime(att)):
                 self.attachments.append(att)
-
-        self.merge_smime()
 
 
 class MessageMsg(Message):
