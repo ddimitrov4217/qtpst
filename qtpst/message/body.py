@@ -86,7 +86,7 @@ class HtmlBodyHeading(QTextEdit):
     def __init__(self, message):
         super().__init__()
         self.message = message
-        self.message_attr = AttrMultiFind(self.message)
+        self.message_attr = attr_multi_find(self.message)
         self.setObjectName('bodyHtmlHeading')
         self.setup_ui()
 
@@ -105,14 +105,14 @@ class HtmlBodyHeading(QTextEdit):
         self.setLineWrapMode(QTextEdit.WidgetWidth)
 
     def append_received(self, content):
-        attr = self.message_attr.find_attr('MessageDeliveryTime')
+        attr = self.message_attr('MessageDeliveryTime')
         if attr is not None:
             content.append('<b>ReceivedDate: </b>')
             content.append('{0:%d.%m.%Y %H:%M:%S}'.format(attr.value))
             content.append('<br/>')
 
     def append_subject(self, content):
-        attr = self.message_attr.find_attr('ConversationTopic')
+        attr = self.message_attr('ConversationTopic')
         if attr is not None:
             content.append('<b>Subject: </b>')
             content.append(attr.value)
@@ -123,10 +123,10 @@ class HtmlBodyHeading(QTextEdit):
             cont_cc = []
             cont_to = []
             for rcp in self.message.recipients:
-                rcp_attrs = AttrMultiFind(rcp)
-                name = rcp_attrs.find_attr('DisplayName')
-                addr = rcp_attrs.find_attr('SmtpAddress')
-                isto = rcp_attrs.find_attr('RecipientType')
+                rcp_attrs = attr_multi_find(rcp)
+                name = rcp_attrs('DisplayName')
+                addr = rcp_attrs('SmtpAddress')
+                isto = rcp_attrs('RecipientType')
                 if isto is not None and isto.value == 1:
                     cont_to.append(self.format_email_addr(name, addr))
                 else:
@@ -140,8 +140,8 @@ class HtmlBodyHeading(QTextEdit):
                 content.append('; '.join(cont_cc))
                 content.append('<br/>')
         else:
-            name_cc = self.message_attr.find_attr('DisplayCc')
-            name_to = self.message_attr.find_attr('DisplayTo')
+            name_cc = self.message_attr('DisplayCc')
+            name_to = self.message_attr('DisplayTo')
             if name_to is not None:
                 content.append('<b>To: </b>')
                 content.append(name_to.value)
@@ -152,8 +152,8 @@ class HtmlBodyHeading(QTextEdit):
                 content.append('<br/>')
 
     def append_sender(self, content):
-        name = self.message_attr.find_attr('SenderName', 'SentRepresentingName')
-        addr = self.message_attr.find_attr('SenderSmtpAddress', 'SentRepresentingSmtpAddress')
+        name = self.message_attr('SenderName', 'SentRepresentingName')
+        addr = self.message_attr('SenderSmtpAddress', 'SentRepresentingSmtpAddress')
         if name is not None or addr is not None:
             content.append('<b>From:</b>')
             content.append(self.format_email_addr(name, addr))
@@ -169,13 +169,11 @@ class HtmlBodyHeading(QTextEdit):
         return ' '.join(result)
 
 
-class AttrMultiFind():
-    def __init__(self, attrs):
-        self.attrs = attrs
-
-    def find_attr(self, *names):
+def attr_multi_find(attrs):
+    def find_attr(*names):
         for name in names:
-            attr = self.attrs.dict.get(name, None)
+            attr = attrs.dict.get(name, None)
             if attr is not None:
                 return attr
         return None
+    return find_attr

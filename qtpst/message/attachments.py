@@ -178,23 +178,26 @@ class AttachmentsListModel(AbstractFlatItemModel):
         return self.att_value(attv, 'DisplayName', 'AttachLongFilename', 'AttachFilename')
 
 
+# pylint: disable=too-few-public-methods
+# Класа е singleton за да се изпозлва винаги един и същ диалог за избор на файл за запис
 class SaveDialog():
     dialog = None
 
-    @staticmethod
-    def open_dialog(default_file_name=None):
-        if SaveDialog.dialog is None:
-            SaveDialog.dialog = QFileDialog()
-            SaveDialog.dialog.setOptions(QFileDialog.Options() | QFileDialog.DontUseNativeDialog)
-            SaveDialog.dialog.setWindowTitle('Запис на файл')
-            SaveDialog.dialog.setAcceptMode(QFileDialog.AcceptSave)
-            SaveDialog.dialog.setFileMode(QFileDialog.AnyFile)
-            SaveDialog.dialog.setViewMode(QFileDialog.Detail)
+    @classmethod
+    def open_dialog(cls, default_file_name=None):
+        if cls.dialog is None:
+            cls.dialog = QFileDialog()
+            cls.dialog.setOptions(QFileDialog.Options() | QFileDialog.DontUseNativeDialog)
+            cls.dialog.setWindowTitle('Запис на файл')
+            cls.dialog.setAcceptMode(QFileDialog.AcceptSave)
+            cls.dialog.setFileMode(QFileDialog.AnyFile)
+            cls.dialog.setViewMode(QFileDialog.Detail)
 
         if default_file_name is not None:
-            SaveDialog.dialog.selectFile(default_file_name)
+            cls.dialog.selectFile(default_file_name)
 
-        if SaveDialog.dialog.exec():
-            file_names = SaveDialog.dialog.selectedFiles()
+        if cls.dialog.exec():
+            file_names = cls.dialog.selectedFiles()
             return file_names[0]
+
         return None
