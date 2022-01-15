@@ -41,7 +41,9 @@ class AttributesList(TreeViewBase):
             return
         selected = self.selectedIndexes()
         attr = self.model().props[selected[0].row()]
-        if attr.vtype == 'String' and attr.vsize >= 102 or attr.vtype in ('Binary', 'Object'):
+        if (attr.vtype == 'String' and attr.vsize >= 102 or
+                attr.vtype in ('Binary', 'Object') or
+                attr.vtype.startswith('Unk')):
             self.value_dialog.set_attribute(attr)
             self.value_dialog.exec()
 
