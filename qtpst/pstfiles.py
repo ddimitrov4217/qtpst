@@ -9,11 +9,9 @@ import logging
 from PyQt5.QtWidgets import QDialog, QDialogButtonBox, QVBoxLayout, QAbstractItemView, QTreeView
 from PyQt5.QtCore import Qt
 
-from . import mbox_wrapper, global_env, AbstractFlatItemModel, TreeViewBase
+from . import mbox_wrapper, global_env, AbstractFlatItemModel
 
 log = logging.getLogger(__name__)
-
-# TODO Двойно цъкване да отваря избрания файл
 
 
 def read_pst(pst_file):

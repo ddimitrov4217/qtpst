@@ -56,9 +56,6 @@ def create_tool_button(widget, action, sp_style):
 class TreeViewBase(QTreeView):
     enter_pressed = pyqtSignal()
 
-    def __init__(self):
-        super().__init__()
-
     def keyPressEvent(self, event):
         super().keyPressEvent(event)
         if event.key() in (Qt.Key_Return, Qt.Key_Enter):
