@@ -10,10 +10,7 @@ setup(
     author="Dimitar Dimitrov",
     author_email="ddimitrov4217@outlook.com",
     url="",
-    install_requires=[
-        # "pyqt>=5.9",
-        "readms>=0.1.dev",
-        ],
+    install_requires=["pyqt5", "readms>=0.1.dev", "wxpst"],
     packages=find_packages(exclude=["ez_setup"]),
     package_data={'qtpst': ['images/*', ]},
     include_package_data=True,
