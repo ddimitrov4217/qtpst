@@ -5,7 +5,7 @@ from abc import abstractmethod
 from os import path
 from PyQt5.QtCore import Qt, QAbstractItemModel, QModelIndex, pyqtSignal
 from PyQt5.QtWidgets import QToolButton, QTreeView
-from wxpst.model import mbox_wrapper, global_env, temp_file
+from readms.pstwrap import mbox_wrapper, global_env, temp_file
 
 
 class AbstractFlatItemModel(QAbstractItemModel):
