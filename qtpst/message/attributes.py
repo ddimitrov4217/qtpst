@@ -56,7 +56,7 @@ class AttributesListModel(AbstractFlatItemModel):
         self.attrs_names = ('Код', 'Тип', 'Размер', 'Стойност',)
 
         def sort_props_key(x):
-            return x.code if not x.code.startswith('0x') else 'zzz-%s' % x.code
+            return x.code if not x.code.startswith('0X') else f'zzz-{x.code}'
 
         self.props = sorted(props, key=sort_props_key)
         self.props_display = {}
@@ -78,7 +78,7 @@ class AttributesListModel(AbstractFlatItemModel):
                 value = PropertyValue.BinaryValue(attv.value.data[:16])
                 value = str(value)
 
-            vsize = '{0:,d}'.format(attv.vsize)
+            vsize = f'{attv.vsize:,d}'
             self.props_display[index.row()] = attv.code, attv.vtype, vsize, value
 
         if role == Qt.DisplayRole:
@@ -140,10 +140,10 @@ class AttributeValueWidget(QDialog):
         value = self.attr.value.data.tobytes()
         # TODO Изглежда RtfCompressed е wrap-нап HTML; това може да се изпозлва вместо Html атрибута
         if self.attr.code == 'RtfCompressed':
-            file_name = '%s.rtf' % self.attr.code
+            file_name = f'{self.attr.code}.rtf'
             value = bytearray(uncommpress_rtf(value))
         else:
-            file_name = '%s.bin' % self.attr.code
+            file_name = f'{self.attr.code}.bin'
         file_name = SaveDialog.open_dialog(file_name)
         if file_name is not None:
             with open(file_name, 'wb') as fout:

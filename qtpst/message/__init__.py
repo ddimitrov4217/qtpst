@@ -55,10 +55,10 @@ class TopMessageWidget(QWidget):
         tabs.addTab(plainTabs, 'Всички атрибути')
 
         for eno, entry in enumerate(self.message.recipients):
-            tabname = 'Получател %d' % (eno+1)
+            tabname = f'Получател {(eno+1)}'
             plainTabs.addTab(AttributesList(entry.properties, value_dialog), tabname)
         for eno, entry in enumerate(self.message.attachments):
-            tabname = 'Приложение %d' % (eno+1)
+            tabname = f'Приложение {(eno+1)}'
             plainTabs.addTab(AttributesList(entry.properties, value_dialog), tabname)
 
     def find_attr_by_name(self, name):

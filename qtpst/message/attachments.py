@@ -75,7 +75,7 @@ class AttachmentsListWidget(QWidget):
                     fout.write(content.value.data)
                 QMessageBox.information(
                     self, 'Информация',
-                    'Файла [%s] е записан успешно.' % path.basename(file_name),
+                    f'Файла [{path.basename(file_name)}] е записан успешно.',
                     buttons=QMessageBox.Ok, defaultButton=QMessageBox.Ok)
 
     def save_all_attachments(self):
@@ -88,7 +88,7 @@ class AttachmentsListWidget(QWidget):
                     zout.writestr(name, content.value.data)
             QMessageBox.information(
                 self, 'Информация',
-                'Архива [%s] е записан успешно.' % path.basename(file_name),
+                f'Архива [{path.basename(file_name)}] е записан успешно.',
                 buttons=QMessageBox.Ok, defaultButton=QMessageBox.Ok)
 
     def open_attachment(self):
@@ -130,7 +130,7 @@ class AttachmentsListModel(AbstractFlatItemModel):
             if hidden is None or not hidden.value:
                 self.attachments.append(att)
 
-        log.debug('number of attachemnts: %d/%d', len(self.attachments), len(attachments))
+        log.debug(f'number of attachemnts: {len(self.attachments)}/{len(attachments)}')
         self.attrs_names = ('Име на файла', 'Размер', 'Тип',)
         self.display_align = {2: Qt.AlignRight}
 
@@ -146,7 +146,7 @@ class AttachmentsListModel(AbstractFlatItemModel):
             file_name = self.att_filename(attv)
             mime_tag = self.att_value(attv, 'AttachMimeTag')
             att_object = attv.dict.get('AttachDataObject')
-            self.display_values[index.row()] = file_name, '{0:,d}'.format(att_object.vsize), mime_tag
+            self.display_values[index.row()] = file_name, f'{att_object.vsize:,d}', mime_tag
 
         if role == Qt.DisplayRole:
             return self.display_values[index.row()][index.column()-1]

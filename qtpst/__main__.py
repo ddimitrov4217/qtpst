@@ -86,7 +86,7 @@ class AppNavigator(QMainWindow):
     def set_title(self):
         name = 'Архиви на имейл кутия'
         if mbox_wrapper.pst_file is not None:
-            self.setWindowTitle('%s: %s' % (name, mbox_wrapper.pst_file))
+            self.setWindowTitle(f'{name}: {mbox_wrapper.pst_file}')
         else:
             self.setWindowTitle(name)
 
@@ -121,7 +121,7 @@ class AppNavigator(QMainWindow):
 
 def exception_hook(_etype, value, trace):
     text = traceback.format_tb(trace)
-    text.insert(0, '%s\n' % value)
+    text.insert(0, f'{value}\n')
     text = ''.join(text)
     print(text, file=sys.stderr)
 

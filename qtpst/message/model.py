@@ -28,13 +28,13 @@ class AttributesContainer:
         for attv in self.properties:
             pkey = attv.code
             if pkey in self.dict:
-                pkey = '%s.%d' % (pkey, ino)
+                pkey = f'{pkey}.{ino}'
                 ino += 1
             self.dict[pkey] = attv
 
     def dump_hier(self):
         def dump_entry(entry, level=0):
-            name = '%s%s' % ('  '*level, entry.__class__.__name__)
+            name = f"{'  '*level}{entry.__class__.__name__}"
             log.debug('%-19s%4d %s', name, len(entry.properties), entry.name)
 
             if isinstance(entry, Message):

@@ -76,7 +76,7 @@ class HtmlBody(QTextEdit):
             if cid is not None:
                 content = att.dict.get('AttachDataObject')
                 refname = temp_file.write_temp(content.value.data)
-                body_html = body_html.replace('cid:%s' % cid.value, refname)
+                body_html = body_html.replace(f'cid:{cid.value}', refname)
         self.setHtml(body_html)
         self.setReadOnly(True)
         self.setLineWrapMode(QTextEdit.WidgetWidth)
@@ -108,7 +108,7 @@ class HtmlBodyHeading(QTextEdit):
         attr = self.message_attr('MessageDeliveryTime')
         if attr is not None:
             content.append('<b>ReceivedDate: </b>')
-            content.append('{0:%d.%m.%Y %H:%M:%S}'.format(attr.value))
+            content.append(f'{attr.value:%d.%m.%Y %H:%M:%S}')
             content.append('<br/>')
 
     def append_subject(self, content):
@@ -163,9 +163,9 @@ class HtmlBodyHeading(QTextEdit):
     def format_email_addr(name, addr):
         result = []
         if name is not None:
-            result.append(' %s' % name.value)
+            result.append(f' {name.value}')
         if addr is not None:
-            result.append(' &lt;%s&gt;' % addr.value)
+            result.append(f' &lt;{addr.value}&gt;')
         return ' '.join(result)
 
 

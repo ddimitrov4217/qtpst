@@ -50,8 +50,8 @@ class MboxNavigator(QTreeWidget):
 
             item = QTreeWidgetItem()
             item.setText(0, node.name)
-            item.setText(1, '%d' % tcnt if tcnt > 0 else '')
-            item.setText(2, '%d' % node.mcnt if node.mcnt > 0 else '')
+            item.setText(1, f"{tcnt if tcnt > 0 else ''}")
+            item.setText(2, f"{node.mcnt if node.mcnt > 0 else ''}")
             item.setTextAlignment(1, Qt.AlignRight)
             item.setTextAlignment(2, Qt.AlignRight)
             item.setIcon(0, icon)
