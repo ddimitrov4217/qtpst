@@ -30,7 +30,7 @@ class AppNavigator(QMainWindow):
         self.set_title()
         self.setWindowIcon(self.style().standardIcon(QStyle.SP_TitleBarMenuButton))
         geometry = QApplication.instance().primaryScreen().availableGeometry()
-        self.resize(geometry.width()*0.7, geometry.height()*0.7)
+        self.resize(int(geometry.width()*0.7), int(geometry.height()*0.7))
 
         toolbar = QToolBar('global actions')
         toolbar.setFloatable(False)
