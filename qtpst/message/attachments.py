@@ -1,7 +1,8 @@
 # -*- coding: UTF-8 -*-
 # vim:ft=python:et:ts=4:sw=4:ai
 
-from os import startfile, path
+from sys import platform
+from os import path
 from zipfile import ZipFile
 import logging
 
@@ -12,6 +13,15 @@ from PyQt5.QtCore import Qt, QItemSelectionModel
 from .. import AbstractFlatItemModel, temp_file, create_tool_button, TreeViewBase
 
 log = logging.getLogger(__name__)
+
+def startfile(filename):
+    if platform == "win32":
+        from os import startfile as startfile_
+        os.startfile_(filename)
+    else:
+        import subprocess
+        opener = "open" if platform == "darwin" else "xdg-open"
+        subprocess.call([opener, filename])
 
 # TODO Икони според типовете на файловете (поне да се различава файл от приложено съобщение)
 # TODO Отваряне на вложено съобщения
