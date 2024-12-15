@@ -1,0 +1,60 @@
+[build-system]
+requires = ["hatchling", "versioningit"]
+build-backend = "hatchling.build"
+
+[project]
+name = "qtpst"
+dynamic = ["version"]
+description = "PyQt5 based GUI for pst mail boxes"
+authors = [
+    { name = "Dimitar Dimitrov", email = "ddimitrov4217@gmail.com" },
+]
+dependencies = [
+    "pyqt5",
+    "wxpst @ file://{root}/../wxpst",
+]
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[project.urls]
+Homepage = "https://github.com/ddimitrov4217/qtpst.git"
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "/qtpst",
+]
+
+[tool.hatch.version]
+source = "versioningit"
+
+[tool.versioningit.next-version]
+method = "smallest"
+
+[tool.versioningit.format]
+distance = "{base_version}.post{distance}"
+distance-dirty = "{base_version}.dev{distance}"
+dirty = "{base_version}.dev{distance}"
+
+[tool.ruff]
+line-length = 92
+output-format = "grouped"
+
+[tool.ruff.format]
+preview = true
+# quote-style = "single"
+
+[tool.ruff.lint]
+preview = false  # без все още нестабилните правила
+allowed-confusables = ["а", "с", "е", "г", "о", "Н", "Е", "С", "З", "Р", "р"]
+ignore = [
+]
+mccabe.max-complexity = 10  # по подразбиране е 10
+
+[tool.ruff.lint.extend-per-file-ignores]
+# "docs/.hooks/*" = ["INP001", "T201"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["foo", "_"]
+
+[tool.hatch.envs.test.scripts]
+# mbox = "python -um readms.mboxpst {args:.}"
