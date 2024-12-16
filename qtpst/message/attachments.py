@@ -14,10 +14,11 @@ from .. import AbstractFlatItemModel, temp_file, create_tool_button, TreeViewBas
 
 log = logging.getLogger(__name__)
 
+
 def startfile(filename):
     if platform == "win32":
         from os import startfile as startfile_
-        os.startfile_(filename)
+        startfile_(filename)
     else:
         import subprocess
         opener = "open" if platform == "darwin" else "xdg-open"
