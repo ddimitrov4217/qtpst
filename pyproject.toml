@@ -11,7 +11,7 @@ authors = [
 ]
 dependencies = [
     "pyqt5",
-    "wxpst @ file://{root}/../wxpst",
+    "readms @ file://{root}/../readms",
 ]
 [tool.hatch.metadata]
 allow-direct-references = true

@@ -2,7 +2,7 @@
 # vim:ft=python:et:ts=4:sw=4:ai
 
 import sys
-from os import path
+from os import path, getcwd
 import traceback
 import logging
 import click
@@ -157,8 +157,7 @@ def run_start(app, tapp):
 @click.option('--config', type=click.Path(exists=True), help='конфигурационен файл')
 def cli(config=None):
     if config is None:
-        config_file = path.join(path.dirname(__file__), '..', '..', 'wxpst')
-        config_file = path.abspath(path.join(config_file, 'appconfig.ini'))
+        config_file = path.abspath(path.join(getcwd(), 'appconfig.ini'))
     else:
         config_file = config
     global_env.setup_env(config_file)

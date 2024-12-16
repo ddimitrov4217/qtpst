@@ -2,18 +2,17 @@
 # vim:ft=python:et:ts=4:sw=4:ai
 
 import sys
-from os import path
+from os import path, getcwd
 from collections import namedtuple
 
 from readms.readpst import PropertyContext
-from wxpst.model import mbox_wrapper, global_env
+from readms.pstwrap import mbox_wrapper, global_env
 
 MboxNode = namedtuple('MboxNode', ['name', 'mcnt', 'tcnt', 'nid', 'children'])
 
 
 def init_mbox():
-    config_file = path.join(path.dirname(__file__), '..', '..', 'wxpst')
-    config_file = path.abspath(path.join(config_file, "appconfig.ini"))
+    config_file = path.abspath(path.join(getcwd(), "appconfig.ini"))
     global_env.setup_env(config_file)
     mbox_wrapper.init_mbox_wrapper(global_env.config)
 

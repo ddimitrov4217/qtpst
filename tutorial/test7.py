@@ -8,7 +8,7 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtCore import Qt, QAbstractItemModel, QModelIndex, QItemSelectionModel, QSize
 
 from mbox_helper import get_pst_folder_hierarchy
-from wxpst.model import mbox_wrapper
+from readms.pstwrap import mbox_wrapper
 
 
 class MboxNavigator(QTreeWidget):
