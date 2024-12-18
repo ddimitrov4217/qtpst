@@ -4,7 +4,7 @@
 import logging
 
 from PyQt5.QtWidgets import QWidget, QHBoxLayout, QComboBox, QLineEdit, QAction, QStyle
-from . import mbox_wrapper, create_tool_button
+from qtpst import mbox_wrapper, create_tool_button
 
 log = logging.getLogger(__name__)
 

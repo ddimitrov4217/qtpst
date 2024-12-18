@@ -9,7 +9,7 @@ import logging
 from PyQt5.QtWidgets import QDialog, QDialogButtonBox, QVBoxLayout, QAbstractItemView, QTreeView
 from PyQt5.QtCore import Qt
 
-from . import mbox_wrapper, global_env, AbstractFlatItemModel
+from qtpst import mbox_wrapper, global_env, AbstractFlatItemModel
 
 log = logging.getLogger(__name__)
 

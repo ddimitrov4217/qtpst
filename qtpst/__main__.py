@@ -11,12 +11,12 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QToolBar, QMessageBox
 from PyQt5.QtWidgets import QStyle, QAction, QSplitter, QVBoxLayout, QWidget
 from PyQt5.QtCore import Qt
 
-from . import mbox_wrapper, global_env, app_css, temp_file, create_tool_button
-from . pstfiles import PstFilesDialog, read_pst
-from . navigator import MboxNavigator
-from . messages import MessagesList
-from . message import AppMessageFile, AppMessageNid
-from . search import SearchWidget
+from qtpst import mbox_wrapper, global_env, app_css, temp_file, create_tool_button
+from qtpst.pstfiles import PstFilesDialog, read_pst
+from qtpst.navigator import MboxNavigator
+from qtpst.messages import MessagesList
+from qtpst.message import AppMessageFile, AppMessageNid
+from qtpst.search import SearchWidget
 
 log = logging.getLogger(__name__)
 

@@ -6,7 +6,7 @@ import logging
 
 from PyQt5.QtWidgets import QTextEdit, QWidget, QVBoxLayout
 from readms.metapst import get_internet_code_page
-from .. import temp_file
+from qtpst import temp_file
 
 log = logging.getLogger(__name__)
 

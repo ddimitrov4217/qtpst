@@ -8,8 +8,8 @@ from PyQt5.QtWidgets import QAbstractItemView, QStyledItemDelegate
 from PyQt5.QtCore import Qt, QItemSelectionModel, QPoint, QRect, QModelIndex
 from PyQt5.QtGui import QColor, QPen, QBrush
 
-from . import mbox_wrapper, AbstractFlatItemModel, TreeViewBase
-from . message import AppMessageNid
+from qtpst import mbox_wrapper, AbstractFlatItemModel, TreeViewBase
+from qtpst.message import AppMessageNid
 
 log = logging.getLogger(__name__)
 

@@ -8,7 +8,7 @@ from PyQt5.QtWidgets import QTreeWidget, QTreeWidgetItem, QStyle
 from PyQt5.QtCore import Qt
 
 from readms.readpst import PropertyContext
-from . import mbox_wrapper
+from qtpst import mbox_wrapper
 
 MboxNode = namedtuple('MboxNode', ['name', 'mcnt', 'tcnt', 'nid', 'children'])
 log = logging.getLogger(__name__)

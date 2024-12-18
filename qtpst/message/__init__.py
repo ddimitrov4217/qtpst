@@ -5,12 +5,12 @@ import logging
 
 from PyQt5.QtWidgets import QApplication, QWidget, QTabWidget, QVBoxLayout, QMainWindow, QStyle
 
-from . attributes import AttributesList, AttributeValueWidget
-from . body import plain_text_widget, html_widget
-from . model import MessageNid, MessageMsg
-from . attachments import AttachmentsListWidget
+from qtpst.message.attributes import AttributesList, AttributeValueWidget
+from qtpst.message.body import plain_text_widget, html_widget
+from qtpst.message.model import MessageNid, MessageMsg
+from qtpst.message.attachments import AttachmentsListWidget
 
-from .. import app_css
+from qtpst import app_css
 
 log = logging.getLogger(__name__)
 

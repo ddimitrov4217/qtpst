@@ -8,7 +8,7 @@ from readms.readmsg import PropertiesStream
 from readms.readmsg import Message as OleMessage, Attachment as OleAttachment
 from readms.pstmbox import MimeData
 
-from .. import mbox_wrapper
+from qtpst import mbox_wrapper
 
 log = logging.getLogger(__name__)
 

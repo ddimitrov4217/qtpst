@@ -10,7 +10,7 @@ from PyQt5.QtWidgets import QWidget, QToolBar, QVBoxLayout, QAction
 from PyQt5.QtWidgets import QMessageBox, QFileDialog, QStyle
 from PyQt5.QtCore import Qt, QItemSelectionModel
 
-from .. import AbstractFlatItemModel, temp_file, create_tool_button, TreeViewBase
+from qtpst import AbstractFlatItemModel, temp_file, create_tool_button, TreeViewBase
 
 log = logging.getLogger(__name__)
 

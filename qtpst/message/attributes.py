@@ -10,8 +10,8 @@ from PyQt5.QtCore import Qt, QItemSelectionModel
 from readms.readpst import PropertyValue
 from readms.readutl import uncommpress_rtf
 
-from .. import AbstractFlatItemModel, TreeViewBase, app_css
-from . attachments import SaveDialog
+from qtpst import AbstractFlatItemModel, TreeViewBase, app_css
+from qtpst.message.attachments import SaveDialog
 
 log = logging.getLogger(__name__)
 
