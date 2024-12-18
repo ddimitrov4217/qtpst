@@ -33,7 +33,7 @@ class MboxNavigator(QTreeWidget):
 
     def load_tree_nodes(self, select_nid=None):
         items = []
-        self.data = dict()
+        self.data = {}
         # https://www.pythonguis.com/faq/built-in-qicons-pyqt/
         icon = self.style().standardIcon(QStyle.SP_DirIcon)
 
@@ -108,8 +108,8 @@ class MboxNavigator(QTreeWidget):
 
 
 def get_pst_folder_hierarchy():
-    nodes_list = list()  # MboxNode
-    nodes_dict = dict()
+    nodes_list = []  # MboxNode
+    nodes_dict = {}
     ndb = mbox_wrapper.mbox.get_mbox()
 
     for nx in ndb._nbt:

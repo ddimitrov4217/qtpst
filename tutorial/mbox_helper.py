@@ -23,8 +23,8 @@ def read_pst(pst_file):
 
 
 def get_pst_folder_hierarchy():
-    nodes_list = list()  # MboxNode
-    nodes_dict = dict()
+    nodes_list = []  # MboxNode
+    nodes_dict = {}
     ndb = mbox_wrapper.mbox.get_mbox()
 
     for nx in ndb._nbt:

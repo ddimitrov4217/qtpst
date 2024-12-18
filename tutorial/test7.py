@@ -35,7 +35,7 @@ class MboxNavigator(QTreeWidget):
 
     def loadTreeNodes(self):
         items = []
-        self.data = dict()
+        self.data = {}
         # https://www.pythonguis.com/faq/built-in-qicons-pyqt/
         icon = self.style().standardIcon(QStyle.SP_DirIcon)
 
