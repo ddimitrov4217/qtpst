@@ -145,7 +145,7 @@ class AttributeValueWidget(QDialog):
 
     def save_attribute(self):
         value = self.attr.value.data.tobytes()
-        # TODO Изглежда RtfCompressed е wrap-нап HTML; това може да се изпозлва вместо Html атрибута
+        # TODO: Изглежда RtfCompressed е wrap-нап HTML; това може да се изпозлва вместо Html атрибута
         if self.attr.code == 'RtfCompressed':
             file_name = f'{self.attr.code}.rtf'
             value = bytearray(uncommpress_rtf(value))

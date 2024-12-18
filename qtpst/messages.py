@@ -13,7 +13,7 @@ from qtpst.message import AppMessageNid
 
 log = logging.getLogger(__name__)
 
-# TODO Колонка с индикатор за приложен файл
+# TODO: Колонка с индикатор за приложен файл
 
 
 class MessagesList(TreeViewBase):
@@ -126,8 +126,8 @@ class MessagesListModel(AbstractFlatItemModel):
         if role == Qt.TextAlignmentRole:
             return self.message_attr_decor[index.column()-1][1]
 
-        # TODO червени за например големите
-        # TODO със Qt.BackgroundRole за тези които имат тагове
+        # TODO: червени за например големите
+        # TODO: със Qt.BackgroundRole за тези които имат тагове
         if role == Qt.ForegroundRole:
             return QColor(0, 0, 0)
 

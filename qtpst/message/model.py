@@ -16,7 +16,7 @@ log = logging.getLogger(__name__)
 
 AttributeValue = namedtuple('AttributeValue', ['code', 'vtype', 'vsize', 'value'])
 
-# TODO Обслужване на вложените съобщения с добавянето им в модела?
+# TODO: Обслужване на вложените съобщения с добавянето им в модела?
 
 
 class AttributesContainer:
@@ -124,8 +124,8 @@ class MessageNid(Message):
             if cid is not None and cid.startswith('image'):
                 att.properties.append(att_boo('AttachmentHidden', True))
 
-            # TODO AttacheMethod, AttachmenHidden ObjectType
-            # TODO да се различават приложените съобщения и да се зареждат
+            # TODO: AttacheMethod, AttachmenHidden ObjectType
+            # TODO: да се различават приложените съобщения и да се зареждат
 
             att.load_dict()
             if not self.append_smime(find_smime(att)):
@@ -194,7 +194,7 @@ class MessageSmime(Message):
                 att.properties.append(att_str('AttachLongFilename', name))
                 att.properties.append(att_str('DisplayName', name))
                 att.properties.append(att_str('AttachMimeTag', part.get_content_maintype()))
-                # TODO Inline картинки в S/MIME AttachContentId; за сега няма тест за проучване
+                # TODO: Inline картинки в S/MIME AttachContentId; за сега няма тест за проучване
                 att.load_dict()
                 ano += 1
 

@@ -31,8 +31,8 @@ def startfile(filename):
         opener = "open" if platform == "darwin" else "xdg-open"
         subprocess.call([opener, filename])
 
-# TODO Икони според типовете на файловете (поне да се различава файл от приложено съобщение)
-# TODO Отваряне на вложено съобщения
+# TODO: Икони според типовете на файловете (поне да се различава файл от приложено съобщение)
+# TODO: Отваряне на вложено съобщения
 
 
 class AttachmentsListWidget(QWidget):
