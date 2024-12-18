@@ -1,15 +1,20 @@
 # -*- coding: UTF-8 -*-
 # vim:ft=python:et:ts=4:sw=4:ai
 
-from os import listdir, path, stat
-from datetime import datetime
-
 import logging
+from datetime import datetime
+from os import listdir, path, stat
 
-from PyQt5.QtWidgets import QDialog, QDialogButtonBox, QVBoxLayout, QAbstractItemView, QTreeView
 from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import (
+    QAbstractItemView,
+    QDialog,
+    QDialogButtonBox,
+    QTreeView,
+    QVBoxLayout,
+)
 
-from qtpst import mbox_wrapper, global_env, AbstractFlatItemModel
+from qtpst import AbstractFlatItemModel, global_env, mbox_wrapper
 
 log = logging.getLogger(__name__)
 

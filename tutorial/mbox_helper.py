@@ -2,11 +2,11 @@
 # vim:ft=python:et:ts=4:sw=4:ai
 
 import sys
-from os import path, getcwd
 from collections import namedtuple
+from os import getcwd, path
 
+from readms.pstwrap import global_env, mbox_wrapper
 from readms.readpst import PropertyContext
-from readms.pstwrap import mbox_wrapper, global_env
 
 MboxNode = namedtuple('MboxNode', ['name', 'mcnt', 'tcnt', 'nid', 'children'])
 

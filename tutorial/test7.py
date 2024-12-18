@@ -2,12 +2,20 @@
 # vim:ft=python:et:ts=4:sw=4:ai
 
 import sys
-from PyQt5.QtWidgets import (
-    QApplication, QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget, QStyle, QSplitter,
-    QTreeView, QAbstractItemView)
-from PyQt5.QtCore import Qt, QAbstractItemModel, QModelIndex, QItemSelectionModel, QSize
 
 from mbox_helper import get_pst_folder_hierarchy
+from PyQt5.QtCore import QAbstractItemModel, QItemSelectionModel, QModelIndex, QSize, Qt
+from PyQt5.QtWidgets import (
+    QAbstractItemView,
+    QApplication,
+    QSplitter,
+    QStyle,
+    QTreeView,
+    QTreeWidget,
+    QTreeWidgetItem,
+    QVBoxLayout,
+    QWidget,
+)
 from readms.pstwrap import mbox_wrapper
 
 

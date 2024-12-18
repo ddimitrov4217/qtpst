@@ -5,7 +5,9 @@
 # How to Create a Window in Python PyQt5?
 
 import sys
-from PyQt5.QtWidgets import QApplication, QWidget, QMainWindow
+
+from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget
+
 # from PyQt5.QtGui import QIcon
 
 

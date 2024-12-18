@@ -1,21 +1,30 @@
 # -*- coding: UTF-8 -*-
 # vim:ft=python:et:ts=4:sw=4:ai
 
-import sys
-from os import path, getcwd
-import traceback
 import logging
+import sys
+import traceback
+from os import getcwd, path
+
 import click
-
-from PyQt5.QtWidgets import QApplication, QMainWindow, QToolBar, QMessageBox
-from PyQt5.QtWidgets import QStyle, QAction, QSplitter, QVBoxLayout, QWidget
 from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import (
+    QAction,
+    QApplication,
+    QMainWindow,
+    QMessageBox,
+    QSplitter,
+    QStyle,
+    QToolBar,
+    QVBoxLayout,
+    QWidget,
+)
 
-from qtpst import mbox_wrapper, global_env, app_css, temp_file, create_tool_button
-from qtpst.pstfiles import PstFilesDialog, read_pst
-from qtpst.navigator import MboxNavigator
-from qtpst.messages import MessagesList
+from qtpst import app_css, create_tool_button, global_env, mbox_wrapper, temp_file
 from qtpst.message import AppMessageFile, AppMessageNid
+from qtpst.messages import MessagesList
+from qtpst.navigator import MboxNavigator
+from qtpst.pstfiles import PstFilesDialog, read_pst
 from qtpst.search import SearchWidget
 
 log = logging.getLogger(__name__)

@@ -3,10 +3,12 @@
 
 import logging
 from collections import namedtuple
-from readms.readpst import PropertyValue, PropertyContext
-from readms.readmsg import PropertiesStream
-from readms.readmsg import Message as OleMessage, Attachment as OleAttachment
+
 from readms.pstmbox import MimeData
+from readms.readmsg import Attachment as OleAttachment
+from readms.readmsg import Message as OleMessage
+from readms.readmsg import PropertiesStream
+from readms.readpst import PropertyContext, PropertyValue
 
 from qtpst import mbox_wrapper
 

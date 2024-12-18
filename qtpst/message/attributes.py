@@ -4,9 +4,16 @@
 import logging
 import re
 
-from PyQt5.QtWidgets import QDialog, QTextEdit, QToolBar, QPushButton
-from PyQt5.QtWidgets import QHBoxLayout, QVBoxLayout, QStyle
-from PyQt5.QtCore import Qt, QItemSelectionModel
+from PyQt5.QtCore import QItemSelectionModel, Qt
+from PyQt5.QtWidgets import (
+    QDialog,
+    QHBoxLayout,
+    QPushButton,
+    QStyle,
+    QTextEdit,
+    QToolBar,
+    QVBoxLayout,
+)
 from readms.readpst import PropertyValue
 from readms.readutl import uncommpress_rtf
 

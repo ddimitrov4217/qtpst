@@ -1,16 +1,23 @@
 # -*- coding: UTF-8 -*-
 # vim:ft=python:et:ts=4:sw=4:ai
 
-from sys import platform
-from os import path
-from zipfile import ZipFile
 import logging
+from os import path
+from sys import platform
+from zipfile import ZipFile
 
-from PyQt5.QtWidgets import QWidget, QToolBar, QVBoxLayout, QAction
-from PyQt5.QtWidgets import QMessageBox, QFileDialog, QStyle
-from PyQt5.QtCore import Qt, QItemSelectionModel
+from PyQt5.QtCore import QItemSelectionModel, Qt
+from PyQt5.QtWidgets import (
+    QAction,
+    QFileDialog,
+    QMessageBox,
+    QStyle,
+    QToolBar,
+    QVBoxLayout,
+    QWidget,
+)
 
-from qtpst import AbstractFlatItemModel, temp_file, create_tool_button, TreeViewBase
+from qtpst import AbstractFlatItemModel, TreeViewBase, create_tool_button, temp_file
 
 log = logging.getLogger(__name__)
 

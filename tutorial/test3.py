@@ -5,9 +5,9 @@
 # леко модифициран
 
 import sys
-from PyQt5.QtWidgets import QApplication, QLabel, QWidget
-from PyQt5.QtGui import QFont, QPalette, QColor
 
+from PyQt5.QtGui import QColor, QFont, QPalette
+from PyQt5.QtWidgets import QApplication, QLabel, QWidget
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

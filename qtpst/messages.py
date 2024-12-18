@@ -1,14 +1,14 @@
 # -*- coding: UTF-8 -*-
 # vim:ft=python:et:ts=4:sw=4:ai
 
-import re
 import logging
+import re
 
+from PyQt5.QtCore import QItemSelectionModel, QModelIndex, QPoint, QRect, Qt
+from PyQt5.QtGui import QBrush, QColor, QPen
 from PyQt5.QtWidgets import QAbstractItemView, QStyledItemDelegate
-from PyQt5.QtCore import Qt, QItemSelectionModel, QPoint, QRect, QModelIndex
-from PyQt5.QtGui import QColor, QPen, QBrush
 
-from qtpst import mbox_wrapper, AbstractFlatItemModel, TreeViewBase
+from qtpst import AbstractFlatItemModel, TreeViewBase, mbox_wrapper
 from qtpst.message import AppMessageNid
 
 log = logging.getLogger(__name__)

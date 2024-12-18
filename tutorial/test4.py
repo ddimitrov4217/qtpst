@@ -5,6 +5,7 @@
 # Displaying Data Using a Table Widget
 
 import sys
+
 from PyQt5.QtGui import QColor
 from PyQt5.QtWidgets import QApplication, QTableWidget, QTableWidgetItem
 

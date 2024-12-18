@@ -1,11 +1,12 @@
 # -*- coding: UTF-8 -*-
 # vim:ft=python:et:ts=4:sw=4:ai
 
-from codecs import decode
 import logging
+from codecs import decode
 
-from PyQt5.QtWidgets import QTextEdit, QWidget, QVBoxLayout
+from PyQt5.QtWidgets import QTextEdit, QVBoxLayout, QWidget
 from readms.metapst import get_internet_code_page
+
 from qtpst import temp_file
 
 log = logging.getLogger(__name__)

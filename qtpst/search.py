@@ -3,8 +3,9 @@
 
 import logging
 
-from PyQt5.QtWidgets import QWidget, QHBoxLayout, QComboBox, QLineEdit, QAction, QStyle
-from qtpst import mbox_wrapper, create_tool_button
+from PyQt5.QtWidgets import QAction, QComboBox, QHBoxLayout, QLineEdit, QStyle, QWidget
+
+from qtpst import create_tool_button, mbox_wrapper
 
 log = logging.getLogger(__name__)
 

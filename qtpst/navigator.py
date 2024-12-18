@@ -4,10 +4,10 @@
 import logging
 from collections import namedtuple
 
-from PyQt5.QtWidgets import QTreeWidget, QTreeWidgetItem, QStyle
 from PyQt5.QtCore import Qt
-
+from PyQt5.QtWidgets import QStyle, QTreeWidget, QTreeWidgetItem
 from readms.readpst import PropertyContext
+
 from qtpst import mbox_wrapper
 
 MboxNode = namedtuple('MboxNode', ['name', 'mcnt', 'tcnt', 'nid', 'children'])
