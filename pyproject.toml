@@ -58,3 +58,6 @@ known-first-party = ["foo", "_"]
 
 [tool.hatch.envs.test.scripts]
 # mbox = "python -um readms.mboxpst {args:.}"
+
+[project.scripts]
+pyqtpst = "qtpst.__main__:cli"
